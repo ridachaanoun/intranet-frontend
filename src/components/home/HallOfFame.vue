@@ -27,7 +27,7 @@ const users = ref([
   <section class="bg-surface rounded-lg shadow-card overflow-hidden mb-8 card-hover">
     <div class="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-4">
       <h4 class="text-lg font-semibold text-text-primary flex items-center">
-        <i class="fas fa-trophy text-accent-400 mr-2"></i>
+        <i class="fas fa-trophy text-primary-400 mr-2"></i>
         Hall of Fame
       </h4>
     </div>
@@ -56,7 +56,7 @@ const users = ref([
       </div>
     </div>
     <div class="bg-surface-muted px-6 py-3 text-right">
-      <a href="#" class="text-accent-400 hover:text-accent-300 font-medium text-sm flex items-center justify-end">
+      <a href="#" class="text-primary-400 hover:text-primary-300 font-medium text-sm flex items-center justify-end">
         View full rankings
         <i class="fas fa-arrow-right ml-2"></i>
       </a>

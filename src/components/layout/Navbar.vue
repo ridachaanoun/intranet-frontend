@@ -12,7 +12,7 @@ const profileOpen = ref(false)
     <div class="flex items-center space-x-4">
       <button 
         @click="appStore.toggleSidebar()" 
-        class="text-text-primary hover:text-accent-400 transition-colors p-1"
+        class="text-text-primary hover:text-primary-400 transition-colors p-1"
         aria-label="Toggle sidebar"
       >
         <i class="fas fa-bars text-lg"></i>
@@ -32,7 +32,7 @@ const profileOpen = ref(false)
           placeholder="Search..." 
           class="bg-surface rounded-full px-3.5 py-1.5 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-accent-400 w-40 sm:w-auto"
         />
-        <button class="absolute right-3.5 top-2 text-text-secondary hover:text-accent-400 transition-colors" aria-label="Search">
+        <button class="absolute right-3.5 top-2 text-text-secondary hover:text-primary-400 transition-colors" aria-label="Search">
           <i class="fas fa-search"></i>
         </button>
       </div>
@@ -48,7 +48,7 @@ const profileOpen = ref(false)
         <button 
           @click="notificationOpen = !notificationOpen"
           @blur="() => setTimeout(() => notificationOpen = false, 200)"
-          class="relative text-text-primary hover:text-accent-400 transition-colors p-2"
+          class="relative text-text-primary hover:text-primary-400 transition-colors p-2"
           aria-label="Notifications"
         >
           <i class="fas fa-bell text-lg"></i>
@@ -67,7 +67,7 @@ const profileOpen = ref(false)
             </div>
           </div>
           <div class="px-4 py-2 border-t border-background-light bg-surface-muted text-center">
-            <a href="#" class="text-sm text-accent-400 hover:text-accent-300 font-medium">
+            <a href="#" class="text-sm text-primary-400 hover:text-primary-300 font-medium">
               View all notifications
             </a>
           </div>
@@ -79,7 +79,7 @@ const profileOpen = ref(false)
         <button 
           @click="profileOpen = !profileOpen"
           @blur="() => setTimeout(() => profileOpen = false, 200)"
-          class="flex items-center space-x-2 text-text-primary hover:text-accent-400 transition-colors rounded-full focus:outline-none focus:ring-2 focus:ring-accent-500"
+          class="flex items-center space-x-2 text-text-primary hover:text-primary-400 transition-colors rounded-full focus:outline-none focus:ring-2 focus:ring-accent-500"
           aria-label="User menu"
         >
           <img 
@@ -94,13 +94,13 @@ const profileOpen = ref(false)
         <div v-if="profileOpen" class="absolute right-0 mt-2 w-48 bg-surface rounded-lg shadow-card overflow-hidden z-50 glass-effect">
           <div class="py-1">
             <a href="#" class="block px-4 py-2 text-sm text-text-primary hover:bg-surface-hover">
-              <i class="fas fa-user mr-2 text-accent-400"></i> Your Profile
+              <i class="fas fa-user mr-2 text-primary-400"></i> Your Profile
             </a>
             <a href="#" class="block px-4 py-2 text-sm text-text-primary hover:bg-surface-hover">
-              <i class="fas fa-cog mr-2 text-accent-400"></i> Settings
+              <i class="fas fa-cog mr-2 text-primary-400"></i> Settings
             </a>
             <a href="#" class="block px-4 py-2 text-sm text-text-primary hover:bg-surface-hover">
-              <i class="fas fa-question-circle mr-2 text-accent-400"></i> Help Center
+              <i class="fas fa-question-circle mr-2 text-primary-400"></i> Help Center
             </a>
             <div class="border-t border-background-light"></div>
             <a href="#" class="block px-4 py-2 text-sm text-text-primary hover:bg-surface-hover">

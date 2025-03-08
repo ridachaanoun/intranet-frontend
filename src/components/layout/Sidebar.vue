@@ -27,31 +27,31 @@ const router = useRouter()
     <nav class="px-2">
       <router-link to="/" class="flex items-center py-3 px-3 mb-1 rounded-lg text-text-primary hover:bg-surface-hover group transition-colors"
         :class="{ 'bg-background-element shadow-soft glow-on-hover': $route.path === '/' }">
-        <i class="fas fa-home w-6 text-center text-lg" :class="$route.path === '/' ? 'text-accent-400' : 'group-hover:text-accent-400'"></i>
+        <i class="fas fa-home w-6 text-center text-lg" :class="$route.path === '/' ? 'text-primary-400' : 'group-hover:text-primary-400'"></i>
         <span v-if="appStore.sidebarOpen" class="ml-3">Home</span>
       </router-link>
       
       <router-link to="/network" class="flex items-center py-3 px-3 mb-1 rounded-lg text-text-primary hover:bg-surface-hover group transition-colors"
         :class="{ 'bg-background-element shadow-soft glow-on-hover': $route.path === '/network' }">
-        <i class="fas fa-users w-6 text-center text-lg" :class="$route.path === '/network' ? 'text-accent-400' : 'group-hover:text-accent-400'"></i>
+        <i class="fas fa-users w-6 text-center text-lg" :class="$route.path === '/network' ? 'text-primary-400' : 'group-hover:text-primary-400'"></i>
         <span v-if="appStore.sidebarOpen" class="ml-3">Network</span>
       </router-link>
       
       <router-link to="/classrooms" class="flex items-center py-3 px-3 mb-1 rounded-lg text-text-primary hover:bg-surface-hover group transition-colors"
         :class="{ 'bg-background-element shadow-soft glow-on-hover': $route.path === '/classrooms' }">
-        <i class="fas fa-chalkboard w-6 text-center text-lg" :class="$route.path === '/classrooms' ? 'text-accent-400' : 'group-hover:text-accent-400'"></i>
+        <i class="fas fa-chalkboard w-6 text-center text-lg" :class="$route.path === '/classrooms' ? 'text-primary-400' : 'group-hover:text-primary-400'"></i>
         <span v-if="appStore.sidebarOpen" class="ml-3">Classrooms</span>
       </router-link>
       
       <router-link to="/transport" class="flex items-center py-3 px-3 mb-1 rounded-lg text-text-primary hover:bg-surface-hover group transition-colors"
         :class="{ 'bg-background-element shadow-soft glow-on-hover': $route.path === '/transport' }">
-        <i class="fas fa-bus w-6 text-center text-lg" :class="$route.path === '/transport' ? 'text-accent-400' : 'group-hover:text-accent-400'"></i>
+        <i class="fas fa-bus w-6 text-center text-lg" :class="$route.path === '/transport' ? 'text-primary-400' : 'group-hover:text-primary-400'"></i>
         <span v-if="appStore.sidebarOpen" class="ml-3">Transport Booking</span>
       </router-link>
       
       <router-link to="/marketplace" class="flex items-center py-3 px-3 mb-1 rounded-lg text-text-primary hover:bg-surface-hover group transition-colors relative"
         :class="{ 'bg-background-element shadow-soft glow-on-hover': $route.path === '/marketplace' }">
-        <i class="fas fa-store w-6 text-center text-lg" :class="$route.path === '/marketplace' ? 'text-accent-400' : 'group-hover:text-accent-400'"></i>
+        <i class="fas fa-store w-6 text-center text-lg" :class="$route.path === '/marketplace' ? 'text-primary-400' : 'group-hover:text-primary-400'"></i>
         <template v-if="appStore.sidebarOpen">
           <span class="ml-3">Marketplace</span>
           <span class="ml-2 bg-secondary-500 text-xs px-2 py-0.5 rounded-full">
@@ -63,11 +63,11 @@ const router = useRouter()
       <div v-if="appStore.sidebarOpen" class="mt-auto border-t border-background-light pt-4 mt-8">
         <h6 class="text-xs uppercase text-text-muted font-semibold px-3 mb-2">Settings</h6>
         <a href="#" class="flex items-center py-2 px-3 mb-1 rounded-lg text-text-primary hover:bg-surface-hover group transition-colors">
-          <i class="fas fa-cog w-6 text-center text-lg group-hover:text-accent-400"></i>
+          <i class="fas fa-cog w-6 text-center text-lg group-hover:text-primary-400"></i>
           <span class="ml-3">Preferences</span>
         </a>
         <a href="#" class="flex items-center py-2 px-3 mb-1 rounded-lg text-text-primary hover:bg-surface-hover group transition-colors">
-          <i class="fas fa-shield-alt w-6 text-center text-lg group-hover:text-accent-400"></i>
+          <i class="fas fa-shield-alt w-6 text-center text-lg group-hover:text-primary-400"></i>
           <span class="ml-3">Security</span>
         </a>
       </div>

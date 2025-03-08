@@ -14,7 +14,7 @@ const appStore = useAppStore()
 
 <template>
   <!-- Welcome Message -->
-  <h1 class="text-2xl font-bold mb-6 bg-gradient-to-r from-accent-400 to-accent-500 bg-clip-text text-transparent flex items-center">
+  <h1 class="text-3xl font-bold bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent inline-block pb-4">
     👋 Welcome back Rida!
   </h1>
   

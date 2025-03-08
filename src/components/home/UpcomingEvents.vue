@@ -29,7 +29,7 @@ const currentMonth = ref("March 2025")
   <section class="bg-surface rounded-lg shadow-card overflow-hidden card-hover">
     <div class="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-4">
       <h4 class="text-lg font-semibold text-text-primary flex items-center">
-        <i class="fas fa-calendar text-accent-400 mr-2"></i>
+        <i class="fas fa-calendar text-primary-400 mr-2"></i>
         Upcoming Events
       </h4>
     </div>
@@ -65,7 +65,7 @@ const currentMonth = ref("March 2025")
       </div>
     </div>
     <div class="px-6 py-4 border-t border-background-light text-center bg-surface-muted">
-      <a href="#" class="text-accent-400 hover:text-accent-300 transition-colors text-sm font-medium flex items-center justify-center">
+      <a href="#" class="text-primary-400 hover:text-primary-300 transition-colors text-sm font-medium flex items-center justify-center">
         View Full Calendar
         <i class="fas fa-arrow-right ml-2"></i>
       </a>

@@ -33,7 +33,7 @@ const delegates = ref([
   <section class="bg-surface rounded-lg shadow-card overflow-hidden card-hover">
     <div class="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-4 flex justify-between items-center">
       <h4 class="text-lg font-semibold text-text-primary flex items-center">
-        <i class="fas fa-user-tie text-accent-400 mr-2"></i>
+        <i class="fas fa-user-tie text-primary-400 mr-2"></i>
         Classroom Delegates
       </h4>
       <span class="px-3 py-1 bg-yellow-400 text-primary-800 text-sm font-medium rounded-full">19</span>
@@ -64,7 +64,7 @@ const delegates = ref([
       </div>
     </div>
     <div class="px-6 py-4 border-t border-background-light text-center bg-surface-muted">
-      <a href="#" class="text-accent-400 hover:text-accent-300 transition-colors text-sm font-medium flex items-center justify-center">
+      <a href="#" class="text-primary-400 hover:text-primary-300 transition-colors text-sm font-medium flex items-center justify-center">
         View All Classrooms 
         <i class="fas fa-arrow-right ml-2"></i>
       </a>
