@@ -3,7 +3,8 @@ import HomeView from '../views/HomeView.vue'
 import NetworkView from '../views/NetworkView.vue'
 import ClassroomsView from "../views/ClassroomsView.vue"
 import MarketplaceView from "../views/MarketplaceView.vue"
-import ProfileView from '@/views/ProfileView.vue'
+import ProfileView from '../views/ProfileView.vue'
+import AdminDashboard from '@/views/AdminDashboard.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +33,11 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: ProfileView
+    },
+    {
+      path: '/AdminDashboard',
+      name: 'AdminDashboard',
+      component: AdminDashboard
     },
 
   ]
