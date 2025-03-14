@@ -1,9 +1,11 @@
 <script setup>
 import { useAppStore } from '../../stores/app'
 import { useRouter } from 'vue-router'
+import { onMounted } from 'vue'
 
 const appStore = useAppStore()
 const router = useRouter()
+
 </script>
 
 <template>
@@ -25,6 +27,13 @@ const router = useRouter()
     </div>
     
     <nav class="px-2">
+      <!-- Profile Link (New) -->
+      <router-link to="/profile" class="flex items-center py-3 px-3 mb-1 rounded-lg text-text-primary hover:bg-surface-hover group transition-colors"
+        :class="{ 'bg-background-element shadow-soft glow-on-hover': $route.path === '/profile' }">
+        <i class="fas fa-user w-6 text-center text-lg" :class="$route.path === '/profile' ? 'text-primary-400' : 'group-hover:text-primary-400'"></i>
+        <span v-if="appStore.sidebarOpen" class="ml-3">Profile</span>
+      </router-link>
+      
       <router-link to="/" class="flex items-center py-3 px-3 mb-1 rounded-lg text-text-primary hover:bg-surface-hover group transition-colors"
         :class="{ 'bg-background-element shadow-soft glow-on-hover': $route.path === '/' }">
         <i class="fas fa-home w-6 text-center text-lg" :class="$route.path === '/' ? 'text-primary-400' : 'group-hover:text-primary-400'"></i>
@@ -60,17 +69,25 @@ const router = useRouter()
         </template>
       </router-link>
       
-      <div v-if="appStore.sidebarOpen" class="mt-auto border-t border-background-light pt-4 mt-8">
-        <h6 class="text-xs uppercase text-text-muted font-semibold px-3 mb-2">Settings</h6>
+      <!-- Admin Dashboard Link (New) -->
+      <router-link to="/AdminDashboard" class="flex items-center py-3 px-3 mb-1 mt-4 rounded-lg text-text-primary hover:bg-surface-hover group transition-colors"
+        :class="{ 'bg-background-element shadow-soft glow-on-hover': $route.path.includes('/AdminDashboard') }">
+        <i class="fas fa-user-shield w-6 text-center text-lg" :class="$route.path.includes('/AdminDashboard') ? 'text-accent-400' : 'group-hover:text-accent-400'"></i>
+        <span v-if="appStore.sidebarOpen" class="ml-3">Admin Dashboard</span>
+      </router-link>
+      
+      <div class="mt-auto border-t border-background-light pt-4 mt-8">
+        <h6 v-if="appStore.sidebarOpen" class="text-xs uppercase text-text-muted font-semibold px-3 mb-2">Settings</h6>
         <a href="#" class="flex items-center py-2 px-3 mb-1 rounded-lg text-text-primary hover:bg-surface-hover group transition-colors">
           <i class="fas fa-cog w-6 text-center text-lg group-hover:text-primary-400"></i>
-          <span class="ml-3">Preferences</span>
+          <span v-if="appStore.sidebarOpen" class="ml-3">Preferences</span>
         </a>
         <a href="#" class="flex items-center py-2 px-3 mb-1 rounded-lg text-text-primary hover:bg-surface-hover group transition-colors">
           <i class="fas fa-shield-alt w-6 text-center text-lg group-hover:text-primary-400"></i>
-          <span class="ml-3">Security</span>
+          <span v-if="appStore.sidebarOpen" class="ml-3">Security</span>
         </a>
       </div>
     </nav>
+    
   </div>
 </template>
