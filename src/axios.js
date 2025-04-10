@@ -1,8 +1,17 @@
 import axios from 'axios';
 
+// Helper function to get the token from cookies
+const getCookie = (name) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+};
+
+// Create Axios instance
 const api = axios.create({
-  baseURL: 'https://api.example.com', // Change to your API URL
-  timeout: 10000, // Request timeout (in milliseconds)
+  baseURL: 'http://localhost:8000/api',
+  timeout: 100000, // Request timeout (in milliseconds)
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -12,10 +21,12 @@ const api = axios.create({
 // Add a request interceptor
 api.interceptors.request.use(
   (config) => {
-    // Example: Attach token if exists
-    const token = localStorage.getItem('token');
+    // Attach token from cookies if it exists
+    const token = getCookie('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('Token found and added to headers:', token);
+      
     }
     return config;
   },
