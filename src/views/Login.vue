@@ -93,6 +93,7 @@
 <script setup>
 import { ref } from 'vue'
 import api from '@/axios'
+import router from '@/router'
 
 // Form data
 const email = ref('')
