@@ -177,6 +177,7 @@
 import { ref, computed } from 'vue';
 import { useUserStore } from '@/stores/userStore';
 import api from '@/axios';
+import Swal from 'sweetalert2';
 
 // Initialize the UserStore
 const userStore = useUserStore();
@@ -263,11 +264,33 @@ const saveSocialLinks = async () => {
     const userId = userStore.user?.id; // Replace with actual user ID
     const response = await api.put(`/user/${userId}/profile`, socialLinks.value);
     console.log(response.data.message);
+
     // Update the user data in the store
     userStore.user.profiles = response.data.profile;
+
+    // Show success popup
+    Swal.fire({
+      icon: 'success',
+      title: 'Links Updated!',
+      text: 'Your social links have been successfully updated.',
+      background: '#13113a', 
+      color: '#f5f3ff', 
+      confirmButtonColor: '#6224ff' 
+    });
+
     closeModal();
   } catch (error) {
     console.error('Failed to save social links:', error);
+
+    // Show error popup
+    Swal.fire({
+      icon: 'error',
+      title: 'Update Failed',
+      text: 'There was an error saving your social links. Please try again.',
+      background: '#1e1a54', // Custom background color (from Tailwind theme)
+      color: '#f5f3ff', // Custom text color (from Tailwind theme)
+      confirmButtonColor: '#ff3c00' // Custom button color
+    });
   }
 };
 

@@ -84,7 +84,7 @@
 
 <script setup>
 import { computed, onMounted } from 'vue';
-import { useUserStore } from '@/stores/userStotre'; // Ensure the store file name is correct
+import { useUserStore } from '@/stores/userStore'; // Ensure the store file name is correct
 
 // Initialize the Pinia store
 const userStore = useUserStore();
