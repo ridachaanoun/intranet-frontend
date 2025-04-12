@@ -1,7 +1,7 @@
 <template>
     <div class="bg-background min-h-screen">
       <!-- Profile Header Section -->
-      <ProfileHeader :user="userData" />
+      <ProfileHeader />
       
       <!-- Main Content Section -->
       <div class="container mx-auto px-4 pb-12">
@@ -198,7 +198,6 @@
     promotion_year: '2024 / 2025',
     remarks: 'Initial registration at YouCode',
     coach: 'Said2 Aabilla',
-    role: 'Lead Instructor',
     coachImage: 'https://randomuser.me/api/portraits/men/22.jpg'
   }
   ])
