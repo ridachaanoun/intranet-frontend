@@ -14,7 +14,7 @@
         
         <!-- Tab Content -->
         <div class="mt-6">
-          <ProfileOverview v-if="activeTab === 'overview'" :user-data="userData" />
+          <ProfileOverview v-if="activeTab === 'overview'" />
           <ProfileClassroom v-else-if="activeTab === 'classroom'" :classroom-data="classroomData" />
           <ProfileAssignments v-else-if="activeTab === 'assignments'" :assignments="assignmentsData" />
           <ProfileAbsences v-else-if="activeTab === 'absences'" :absences="absencesData" />

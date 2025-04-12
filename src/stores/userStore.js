@@ -6,12 +6,16 @@ export const useUserStore = defineStore('user', {
     user: null,
     isLoading: false,
     error: null,
+    isfitch: false,
   }),
   actions: {
     async fetchUserData() {
       this.isLoading = true;
       this.error = null;
-
+      if (this.isFetched) {
+        // If data is already fetched, skip the API call
+        return;
+      }
       try {
         const response = await api.get('/user/details');
         this.user = response.data.user;
