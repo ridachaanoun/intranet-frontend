@@ -276,12 +276,10 @@
   <script setup>
   import { ref, computed } from 'vue'
   import { useRouter } from 'vue-router'
-  import { useAppStore } from '@/stores/app'
-  
   const router = useRouter()
-  const appStore = useAppStore()
+
   
-  
+
   // Filter states
   const searchQuery = ref('')
   const selectedCampus = ref('')
@@ -322,7 +320,7 @@
       slug: 'mernops-masters',
       name: 'MernOps Masters',
       level: '2ème Année',
-      levelValue: '2',
+      // levelValue: '2',
       campus: 'Youssoufia',
       campusValue: '1',
       learners: 16,
@@ -357,7 +355,7 @@
       slug: 'ai-architects',
       name: 'AI Architects',
       level: '1ère Année',
-      levelValue: '1',
+      levelValue: '3',
       campus: 'Safi',
       campusValue: '2',
       learners: 18,
@@ -388,7 +386,7 @@
       level: '2ème Année',
       levelValue: '2',
       campus: 'Youssoufia',
-      campusValue: '1',
+      // campusValue: '1',
       learners: 15,
       promotion: '2024 / 2025',
       coverImage: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',

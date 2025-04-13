@@ -19,6 +19,7 @@ export const useUserStore = defineStore('user', {
       try {
         const response = await api.get('/user/details');
         this.user = response.data.user;
+        this.isFetched = true
       } catch (error) {
         this.error = error.message || 'Failed to fetch user data';
       } finally {
