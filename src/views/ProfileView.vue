@@ -17,7 +17,7 @@
           <ProfileOverview v-if="activeTab === 'overview'" />
           <ProfileClassroom v-else-if="activeTab === 'classroom'" />
           <ProfileAssignments v-else-if="activeTab === 'assignments'"/>
-          <ProfileAbsences v-else-if="activeTab === 'absences'" :absences="absencesData" />
+          <ProfileAbsences v-else-if="activeTab === 'absences'" />
           <ProfileCursus v-else-if="activeTab === 'cursus'" :cursus="cursusData" />
         </div>
       </div>
@@ -43,43 +43,6 @@
     { id: 'cursus', name: 'CURSUS', icon: 'fas fa-graduation-cap' }
   ]
   const activeTab = ref('overview')
-  
-  // Absences data
-  const absencesData = ref([
-    {
-      id: 1,
-      date: '2025-03-08',
-      status: 'Present',
-      class: 'Aliens',
-      session: 'Morning',
-      confirmed_by: 'Said Aabilla'
-    },
-    {
-      id: 2,
-      date: '2025-03-07',
-      status: 'Present',
-      class: 'Aliens',
-      session: 'Morning',
-      confirmed_by: 'Said Aabilla'
-    },
-    {
-      id: 3,
-      date: '2025-03-06',
-      status: 'Absent',
-      class: 'Aliens',
-      session: 'Morning',
-      confirmed_by: 'Said Aabilla',
-      reason: 'Medical appointment'
-    },
-    {
-      id: 4,
-      date: '2025-03-05',
-      status: 'Present',
-      class: 'Aliens',
-      session: 'Morning',
-      confirmed_by: 'Said Aabilla'
-    }
-  ])
   
   // Cursus data
   const cursusData = ref([
