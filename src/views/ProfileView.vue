@@ -15,7 +15,7 @@
         <!-- Tab Content -->
         <div class="mt-6">
           <ProfileOverview v-if="activeTab === 'overview'" />
-          <ProfileClassroom v-else-if="activeTab === 'classroom'" :classroom-data="classroomData" />
+          <ProfileClassroom v-else-if="activeTab === 'classroom'" />
           <ProfileAssignments v-else-if="activeTab === 'assignments'" :assignments="assignmentsData" />
           <ProfileAbsences v-else-if="activeTab === 'absences'" :absences="absencesData" />
           <ProfileCursus v-else-if="activeTab === 'cursus'" :cursus="cursusData" />
@@ -43,57 +43,6 @@
     { id: 'cursus', name: 'CURSUS', icon: 'fas fa-graduation-cap' }
   ]
   const activeTab = ref('overview')
-  
-  // User data
-  const userData = ref({
-    firstName: 'Rida',
-    lastName: 'Chaanoun',
-    username: 'ridachaanouni',
-    phoneNumber: 'Private',
-    youcodeEmail: 'ridachaanouni@youcode.ma',
-    personalEmail: 'ridachaanouni@gmail.com',
-    city: 'Youssoufia',
-    level: '1ère Année',
-    classroom: 'Aliens',
-    referentCoach: 'Said Aabilla',
-    registrationDate: '2024-09-02',
-    campus: 'Youssoufia',
-    promotion: '2024 - 2025',
-    points: '2500 YC',
-    profileImage: 'https://randomuser.me/api/portraits/men/32.jpg',
-    lvl: '1ère Année',
-    isConnected: true,
-    links:{
-        linkedin_url:"https://www.linkedin.com/in/rida-chaanoun/",
-        github_url:"https://github.com/ridachaanoun",
-        website_url:"rftgyhuj",
-        codingame_url:"null",
-        hackerrank_url:"null",
-        twitter_url:"null",
-        instagram_url:"null",
-        instagram_url:"null",
-        facebook_url:"null"
-      }
-  })
-  
-  // Classroom data
-  const classroomData = ref([
-    {
-      id: 1,
-      name: 'Aliens',
-      level: '1ère Année',
-      coach: 'Said Aabilla',
-      coachImage: 'https://randomuser.me/api/portraits/men/22.jpg',
-      learners: 18,
-      delegate: 'Abdeljalil El Filaly',
-      delegateImage: 'https://randomuser.me/api/portraits/men/42.jpg',
-      backupCoach: 'Abdelhafid Belfqir',
-      backupCoachImage: 'https://randomuser.me/api/portraits/men/32.jpg',
-      campus: 'Youssoufia',
-      promotion: '2024 / 2025',
-      coverImage: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    }
-  ])
   
   // Assignments data
   const assignmentsData = ref([
