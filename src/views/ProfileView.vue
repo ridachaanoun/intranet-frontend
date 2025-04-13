@@ -16,7 +16,7 @@
         <div class="mt-6">
           <ProfileOverview v-if="activeTab === 'overview'" />
           <ProfileClassroom v-else-if="activeTab === 'classroom'" />
-          <ProfileAssignments v-else-if="activeTab === 'assignments'" :assignments="assignmentsData" />
+          <ProfileAssignments v-else-if="activeTab === 'assignments'"/>
           <ProfileAbsences v-else-if="activeTab === 'absences'" :absences="absencesData" />
           <ProfileCursus v-else-if="activeTab === 'cursus'" :cursus="cursusData" />
         </div>
@@ -43,37 +43,6 @@
     { id: 'cursus', name: 'CURSUS', icon: 'fas fa-graduation-cap' }
   ]
   const activeTab = ref('overview')
-  
-  // Assignments data
-  const assignmentsData = ref([
-    {
-      id: 1,
-      title: 'Build a Personal Portfolio Website',
-      description: 'Create a responsive personal portfolio website using HTML, CSS and JavaScript.',
-      assigned_by: 'Said Aabilla',
-      assigned_to: 'Rida Chaanoun',
-      due_date: '2025-03-15T23:59:59',
-      status: 'Pending'
-    },
-    {
-      id: 2,
-      title: 'E-commerce Product Page',
-      description: 'Develop an interactive product page for an e-commerce website with a shopping cart functionality.',
-      assigned_by: 'Said Aabilla',
-      assigned_to: 'Rida Chaanoun',
-      due_date: '2025-03-05T23:59:59',
-      status: 'Submitted'
-    },
-    {
-      id: 3,
-      title: 'REST API Integration',
-      description: 'Create a web application that fetches and displays data from a public REST API.',
-      assigned_by: 'Said Aabilla',
-      assigned_to: 'Rida Chaanoun',
-      due_date: '2025-02-28T23:59:59',
-      status: 'Graded'
-    }
-  ])
   
   // Absences data
   const absencesData = ref([
