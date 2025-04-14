@@ -4,14 +4,16 @@
     <div class="overview-card header-card">
       <div class="profile-intro">
         <div class="profile-intro-content">
-          <h2 class="profile-name">{{ user.personal_info.first_name }} {{ user.personal_info.last_name }}</h2>
-          <p class="profile-username">@{{ user.account_info.username }}</p>
+          <h2 class="profile-name">
+            {{ user.personal_info?.first_name || 'N/A' }} {{ user.personal_info?.last_name || 'N/A' }}
+          </h2>
+          <p class="profile-username">@{{ user.account_info?.username || 'N/A' }}</p>
           
           <div class="social-links-section" v-if="hasSocialLinks">
             <h3 class="social-links-title">Connect with me</h3>
             <div class="social-links-grid">
               <!-- LinkedIn -->
-              <a v-if="user.profiles.linkedin && user.profiles.linkedin !== 'null'" 
+              <a v-if="user.profiles?.linkedin" 
                 :href="user.profiles.linkedin" 
                 target="_blank"
                 class="social-link linkedin">
@@ -19,7 +21,7 @@
               </a>
 
               <!-- GitHub -->
-              <a v-if="user.profiles.github && user.profiles.github !== 'null'" 
+              <a v-if="user.profiles?.github" 
                 :href="user.profiles.github" 
                 target="_blank"
                 class="social-link github">
@@ -29,60 +31,14 @@
                 <span>GitHub</span>
               </a>
 
-              <!-- Website -->
-              <a v-if="user.profiles.website && user.profiles.website !== 'null'" 
-                :href="user.profiles.website" 
+              <!-- Other Social Links -->
+              <a v-for="(link, key) in otherSocialLinks" 
+                v-if="link" 
+                :key="key" 
+                :href="link" 
                 target="_blank"
-                class="social-link website">
-                <span>Website</span>
-              </a>
-
-              <!-- Codingame -->
-              <a v-if="user.profiles.codingame && user.profiles.codingame !== 'null'" 
-                :href="user.profiles.codingame" 
-                target="_blank"
-                class="social-link codingame">
-                <span>Codingame</span>
-              </a>
-
-              <!-- HackerRank -->
-              <a v-if="user.profiles.hackerrank && user.profiles.hackerrank !== 'null'" 
-                :href="user.profiles.hackerrank" 
-                target="_blank"
-                class="social-link hackerrank">
-                <span>HackerRank</span>
-              </a>
-
-              <!-- Codeforces -->
-              <a v-if="user.profiles.codeforces && user.profiles.codeforces !== 'null'" 
-                :href="user.profiles.codeforces" 
-                target="_blank"
-                class="social-link codeforces">
-                <span>Codeforces</span>
-              </a>
-
-              <!-- Twitter -->
-              <a v-if="user.profiles.twitter && user.profiles.twitter !== 'null'" 
-                :href="user.profiles.twitter" 
-                target="_blank"
-                class="social-link twitter">
-                <span>Twitter</span>
-              </a>
-
-              <!-- Instagram -->
-              <a v-if="user.profiles.instagram && user.profiles.instagram !== 'null'" 
-                :href="user.profiles.instagram" 
-                target="_blank"
-                class="social-link instagram">
-                <span>Instagram</span>
-              </a>
-
-              <!-- Facebook -->
-              <a v-if="user.profiles.facebook && user.profiles.facebook !== 'null'" 
-                :href="user.profiles.facebook" 
-                target="_blank"
-                class="social-link facebook">
-                <span>Facebook</span>
+                class="social-link">
+                <span>{{ capitalize(key) }}</span>
               </a>
             </div>
           </div>
@@ -103,27 +59,27 @@
       <div class="info-grid">
         <div class="info-item">
           <div class="info-label">First Name</div>
-          <div class="info-value">{{ user.personal_info.first_name }}</div>
+          <div class="info-value">{{ user.personal_info?.first_name || 'N/A' }}</div>
         </div>
         <div class="info-item">
           <div class="info-label">Last Name</div>
-          <div class="info-value">{{ user.personal_info.last_name }}</div>
+          <div class="info-value">{{ user.personal_info?.last_name || 'N/A' }}</div>
         </div>
         <div class="info-item">
           <div class="info-label">Phone</div>
-          <div class="info-value">{{ user.personal_info.phone }}</div>
+          <div class="info-value">{{ user.personal_info?.phone || 'N/A' }}</div>
         </div>
         <div class="info-item">
           <div class="info-label">YouCode Email</div>
-          <div class="info-value">{{ user.account_info.email_login }}</div>
+          <div class="info-value">{{ user.account_info?.email_login || 'N/A' }}</div>
         </div>
         <div class="info-item">
           <div class="info-label">Personal Email</div>
-          <div class="info-value">{{ user.personal_info.email }}</div>
+          <div class="info-value">{{ user.personal_info?.email || 'N/A' }}</div>
         </div>
         <div class="info-item">
           <div class="info-label">City</div>
-          <div class="info-value">{{ user.personal_info.city }}</div>
+          <div class="info-value">{{ user.personal_info?.city || 'N/A' }}</div>
         </div>
       </div>
     </div>
@@ -138,27 +94,27 @@
       <div class="info-grid">
         <div class="info-item">
           <div class="info-label">Level</div>
-          <div class="info-value">{{ user.level }}</div>
+          <div class="info-value">{{ user.level || 'N/A' }}</div>
         </div>
         <div class="info-item">
           <div class="info-label">Classroom</div>
-          <div class="info-value">{{ user.classroom }}</div>
+          <div class="info-value">{{ user.classroom || 'N/A' }}</div>
         </div>
         <div class="info-item">
           <div class="info-label">Referent Coach</div>
-          <div class="info-value">{{ user.referent_coach }}</div>
+          <div class="info-value">{{ user.referent_coach || 'N/A' }}</div>
         </div>
         <div class="info-item">
           <div class="info-label">Registration Date</div>
-          <div class="info-value">{{ formatDate(user.account_info.registration_date) }}</div>
+          <div class="info-value">{{ formatDate(user.account_info?.registration_date) }}</div>
         </div>
         <div class="info-item">
           <div class="info-label">Campus</div>
-          <div class="info-value">{{ user.account_info.campus }}</div>
+          <div class="info-value">{{ user.account_info?.campus || 'N/A' }}</div>
         </div>
         <div class="info-item">
           <div class="info-label">Promotion</div>
-          <div class="info-value">{{ user.account_info.promotion.year }}</div>
+          <div class="info-value">{{ user.account_info?.promotion?.year || 'N/A' }}</div>
         </div>
       </div>
     </div>
@@ -178,8 +134,14 @@ const props = defineProps({
 
 // Check if any social links are available
 const hasSocialLinks = computed(() =>
-  Object.values(props.user.profiles).some(link => link && link !== 'null')
+  Object.values(props.user.profiles || {}).some(link => link)
 );
+
+// Extract other social links
+const otherSocialLinks = computed(() => {
+  const { linkedin, github, ...otherLinks } = props.user.profiles || {};
+  return otherLinks;
+});
 
 // Utility function to capitalize social link names
 const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
