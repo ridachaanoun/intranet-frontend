@@ -18,7 +18,7 @@
           <ProfileClassroom v-else-if="activeTab === 'classroom'" />
           <ProfileAssignments v-else-if="activeTab === 'assignments'"/>
           <ProfileAbsences v-else-if="activeTab === 'absences'" />
-          <ProfileCursus v-else-if="activeTab === 'cursus'" :cursus="cursusData" />
+          <ProfileCursus v-else-if="activeTab === 'cursus'" />
         </div>
       </div>
     </div>
@@ -44,42 +44,5 @@
   ]
   const activeTab = ref('overview')
   
-  // Cursus data
-  const cursusData = ref([
-  {
-    id: 1,
-    date: '2024-09-02',
-    event: 'Registration',
-    status: 'PASS',
-    class: 'Aliens',
-    promotion_year: '2024 / 2025',
-    remarks: 'Initial registration at YouCode',
-    coach: 'Sarah Moukrim',
-    role: 'Admissions Officer',
-    coachImage: 'https://randomuser.me/api/portraits/women/65.jpg'
-  },
-  {
-    id: 2,
-    date: '2024-09-02',
-    event: 'Promotion',
-    status: 'IN PROGRESS',
-    class: 'Aliens',
-    promotion_year: '2024 / 2025',
-    remarks: 'Initial registration at YouCode',
-    coach: 'Said Aabilla',
-    role: 'Lead Instructor',
-    coachImage: 'https://randomuser.me/api/portraits/men/22.jpg'
-  },
-  {
-    id: 3,
-    date: '2024-09-02',
-    event: ' Class Change',
-    status: 'FAIL',
-    class: 'test',
-    promotion_year: '2024 / 2025',
-    remarks: 'Initial registration at YouCode',
-    coach: 'Said2 Aabilla',
-    coachImage: 'https://randomuser.me/api/portraits/men/22.jpg'
-  }
-  ])
+
   </script>

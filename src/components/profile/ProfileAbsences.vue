@@ -67,7 +67,7 @@ const absenceStore = useAbsencesStore();
 const userStore = useUserStore();
 
 const user = computed(()=>userStore.user)
-// Fetch absences when the component is mounted
+
 async function fetchAbsences () {
   
   await absenceStore.fetchAbsence(user.value.id); // Fetch absences for user ID 16
