@@ -18,24 +18,11 @@ onMounted(() => {
 });
 
 const hallOfFame = computed(() => homeStore.hallOfFame);
+const announcements = computed(() => homeStore.announcements);
 
 </script>
 
 <template>
-  
-<div v-if="hallOfFame">
-
-  {{ hallOfFame }}
-
-</div>
-<div v-else>
-  nooo
-</div>
-  Welcome Message
-  <h1 class="text-3xl font-bold bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent inline-block pb-4">
-    👋 Welcome back Rida!
-  </h1>
-  
   <!-- Home Grid - 1 column on mobile, 2 on tablet, 4 on desktop -->
   <div class="grid grid-cols-1 md:grid-cols-2  gap-6">
     <!-- Column 1 -->
@@ -46,7 +33,7 @@ const hallOfFame = computed(() => homeStore.hallOfFame);
     
     <!-- Column 2 -->
     <div>
-      <Announcements />
+      <Announcements :announcements="announcements" />
       <ActivityStats />
     </div>
     
@@ -61,6 +48,4 @@ const hallOfFame = computed(() => homeStore.hallOfFame);
       <QuickLinks />
     </div>
   </div>
-
-  {{ hallOfFame }}
 </template>

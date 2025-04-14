@@ -1,23 +1,13 @@
 <script setup>
-import { ref } from 'vue'
+import { defineProps } from 'vue';
 
-const announcements = ref([
-  {
-    title: "Campus Updates",
-    time: "2 hours ago",
-    content: "The computer lab will be closed for maintenance on Friday from 2-5 PM."
-  },
-  {
-    title: "Upcoming Workshop",
-    time: "Yesterday",
-    content: "Don't miss the \"Web Accessibility\" workshop on Thursday at 4 PM in Room 204."
-  },
-  {
-    title: "Community Event",
-    time: "3 days ago",
-    content: "Join us for the monthly community meetup this Sunday at the central hall."
+// Define the "announcements" prop to receive data from the parent
+defineProps({
+  announcements: {
+    type: Array,
+    required: true
   }
-])
+});
 </script>
 
 <template>
@@ -29,15 +19,15 @@ const announcements = ref([
       </h4>
       <span class="px-3 py-1 bg-secondary-500 text-text-primary text-xs font-medium rounded-full">New</span>
     </div>
-    <div class="divide-y divide-background-light">
+    <div v-if="announcements" class="divide-y divide-background-light">
       <div 
         v-for="(announcement, index) in announcements" 
-        :key="index" 
+        :key="announcement.id" 
         class="p-4 hover:bg-surface-hover transition-colors"
       >
         <div class="flex justify-between mb-2">
           <h5 class="font-medium text-text-primary">{{ announcement.title }}</h5>
-          <span class="text-xs text-text-muted">{{ announcement.time }}</span>
+          <span class="text-xs text-text-muted">{{ new Date(announcement.created_at).toLocaleDateString() }}</span>
         </div>
         <p class="text-sm text-text-secondary mb-2">
           {{ announcement.content }}
@@ -47,6 +37,11 @@ const announcements = ref([
         </div>
       </div>
     </div>
+    <div v-else class="loading flex items-center justify-center py-36">        <svg class="animate-spin h-8 w-8 text-primary-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
     <div class="bg-surface-muted px-6 py-3 text-center">
       <a href="#" class="text-primary-400 hover:text-primary-300 font-medium text-sm flex items-center justify-center">
         View all announcements

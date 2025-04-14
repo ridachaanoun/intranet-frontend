@@ -4,6 +4,7 @@ import api from '@/axios';
 export const usehomeStore = defineStore('home', {
   state: () => ({
     hallOfFame: null,
+    announcements: null,
     isLoading: false,
     error: null,
   }),
@@ -14,11 +15,12 @@ export const usehomeStore = defineStore('home', {
       try {
         const response = await api.get('/hall-of-fame');
         this.hallOfFame = response.data.data;
+        const announcements = await api.get('/announcements');
+        this.announcements = announcements.data.announcements;
       } catch (error) {
-        this.error = error.message || 'Failed to fetch data';
+        this.error = 'Failed to fetch data';
       } finally {
         this.isLoading = false;
-        console.log(this.hallOfFame);
         
       }
     },
