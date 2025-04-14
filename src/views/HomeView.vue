@@ -7,13 +7,31 @@ import BdeMembers from '../components/home/BdeMembers.vue'
 import UpcomingEvents from '../components/home/UpcomingEvents.vue'
 import QuickLinks from '../components/home/QuickLinks.vue'
 
-import { useAppStore } from '../stores/app'
+import { usehomeStore } from '@/stores/homeStore'
+import { computed, onMounted } from 'vue'
 
-const appStore = useAppStore()
+
+const homeStore = usehomeStore();
+
+onMounted(() => {
+  homeStore.fetchData();
+});
+
+const hallOfFame = computed(() => homeStore.hallOfFame);
+
 </script>
 
 <template>
-  <!-- Welcome Message -->
+  
+<div v-if="hallOfFame">
+
+  {{ hallOfFame }}
+
+</div>
+<div v-else>
+  nooo
+</div>
+  Welcome Message
   <h1 class="text-3xl font-bold bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent inline-block pb-4">
     👋 Welcome back Rida!
   </h1>
@@ -22,7 +40,7 @@ const appStore = useAppStore()
   <div class="grid grid-cols-1 md:grid-cols-2  gap-6">
     <!-- Column 1 -->
     <div>
-      <HallOfFame />
+      <HallOfFame :users="hallOfFame" />
       <ClassroomDelegates />
     </div>
     
@@ -43,4 +61,6 @@ const appStore = useAppStore()
       <QuickLinks />
     </div>
   </div>
+
+  {{ hallOfFame }}
 </template>

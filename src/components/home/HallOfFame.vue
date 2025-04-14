@@ -1,26 +1,12 @@
 <script setup>
-import { ref } from 'vue'
+import { defineProps } from 'vue';
 
-const users = ref([
-  {
-    name: "Fidèle Yonli",
-    username: "fidèleyonli",
-    location: "Youssoufia",
-    points: "1068 YC"
-  },
-  {
-    name: "Omar Dbaa",
-    username: "omardbaa",
-    location: "Youssoufia",
-    points: "985 YC"
-  },
-  {
-    name: "Ahmed Bari",
-    username: "ahmedbari",
-    location: "Safi",
-    points: "876 YC"
+defineProps({
+  users: {
+    type: Array,
+    required: true
   }
-])
+});
 </script>
 
 <template>
@@ -31,30 +17,37 @@ const users = ref([
         Hall of Fame
       </h4>
     </div>
-    <div class="divide-y divide-background-light">
+    <div v-if="users"  class="divide-y divide-background-light">
       <div 
         v-for="(user, index) in users" 
-        :key="index" 
+        :key="user.id" 
         class="p-4 flex items-center justify-between hover:bg-surface-hover transition-colors"
       >
         <div class="flex items-center space-x-4">
           <img 
-            :src="`https://ui-avatars.com/api/?name=${user.name.replace(' ', '+')}&background=00f0c0&color=fff`" 
+            :src="user.image" 
             :alt="user.name" 
             class="w-12 h-12 rounded-lg object-cover shadow-sm"
           />
           <div>
             <h4 class="text-base font-medium text-text-primary">{{ user.name }}</h4>
-            <p class="text-sm text-text-secondary">@{{ user.username }}</p>
+            <p class="text-sm text-text-secondary">@{{ user.name }}</p>
             <div class="text-sm text-text-muted flex items-center mt-1">
               <i class="fas fa-location-dot text-text-muted mr-1"></i>
-              {{ user.location }}
+              {{ user.total_points }} Points
             </div>
           </div>
         </div>
-        <div class="text-2xl font-extrabold bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">{{ user.points }}</div>
+        <div class="text-2xl font-extrabold bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">
+          {{ user.total_points }}
+        </div>
       </div>
     </div>
+    <div v-else class="loading flex items-center justify-center py-36">        <svg class="animate-spin h-8 w-8 text-primary-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
     <div class="bg-surface-muted px-6 py-3 text-right">
       <a href="#" class="text-primary-400 hover:text-primary-300 font-medium text-sm flex items-center justify-end">
         View full rankings
