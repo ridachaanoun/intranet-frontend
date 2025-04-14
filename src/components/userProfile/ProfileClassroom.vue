@@ -1,4 +1,5 @@
 <template>
+  <div>
     <div v-if="classroom">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Classrooms Grid -->
@@ -139,6 +140,10 @@
         </div>
       </div>
     </div>
+    <div v-else>
+      <p class="text-center text-gray-500 text-lg">User does not have any classroom assigned.</p>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -148,7 +153,7 @@ import ProfileClassroomLearners from '@/components/profile/ProfileClassroomLearn
 const props = defineProps({
   classroom: {
     type: Object,
-    required: true,
+    required: false, // Allow null or undefined
   },
 });
 </script>
