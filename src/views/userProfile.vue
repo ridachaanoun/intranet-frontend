@@ -16,10 +16,10 @@
         <!-- Tab Content -->
         <div class="mt-6">
           <ProfileOverview v-if="activeTab === 'overview'" :user="user" />
-          <!-- <ProfileClassroom v-else-if="activeTab === 'classroom'" />
-          <ProfileAssignments v-else-if="activeTab === 'assignments'"/>
+          <ProfileClassroom v-else-if="activeTab === 'classroom'" :classroom="classroom"    />
+          <!-- <ProfileAssignments v-else-if="activeTab === 'assignments'"/>
           <ProfileAbsences v-else-if="activeTab === 'absences'" />
-          <ProfileCursus v-else-if="activeTab === 'cursus'" /> -->
+          <ProfileCursus v-else-if="activeTab === 'cursus'" />  -->
         </div>
 
       </div>
@@ -35,8 +35,9 @@
   import api from '@/axios';
   import { ref } from 'vue';
   import ProfileHeader from '@/components/userProfile/ProfileHeader.vue';
-  import ProfileNavigation from '@/components/userProfile/ProfileNavigation.vue';
-  import ProfileOverview from '@/components/userProfile/ProfileOverview.vue'
+  import ProfileNavigation from '@/components/profile/ProfileNavigation.vue';
+  import ProfileOverview from '@/components/userProfile/ProfileOverview.vue';
+  import ProfileClassroom from '@/components/userProfile/ProfileClassroom.vue';
   const props = defineProps({
     id: {
       type: Number,
@@ -45,11 +46,13 @@
   });
   
   const user = ref(null);
+  const classroom = ref(null);
   
   async function fetchUser(id) {
     try {
       const resp = await api.get(`user-details/${id}`);
-      user.value = resp.data.user; 
+      user.value = await resp.data.user; 
+      classroom.value = await resp.data.lastClassroom; 
     } catch (error) {
       console.error('Error fetching user:', error);
     }
