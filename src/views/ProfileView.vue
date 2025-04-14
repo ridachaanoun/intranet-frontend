@@ -6,10 +6,11 @@
       <!-- Main Content Section -->
       <div class="container mx-auto px-4 pb-12">
         <!-- Tabs Navigation -->
-        <ProfileNavigation 
+        <ProfileNavigation v-if="role"
           :tabs="tabs" 
           :active-tab="activeTab" 
-          @change-tab="activeTab = $event" 
+          @change-tab="activeTab = $event"
+          :role="role" 
         />
         
         <!-- Tab Content -->
@@ -25,7 +26,7 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue'
+  import { computed, ref } from 'vue'
   import ProfileHeader from '@/components/profile/ProfileHeader.vue'
   import ProfileNavigation from '@/components/profile/ProfileNavigation.vue'
   import ProfileOverview from '@/components/profile/ProfileOverview.vue'
@@ -33,7 +34,10 @@
   import ProfileAssignments from '@/components/profile/ProfileAssignments.vue'
   import ProfileAbsences from '@/components/profile/ProfileAbsences.vue'
   import ProfileCursus from '@/components/profile/ProfileCursus.vue'
-  
+  import { useUserStore } from '@/stores/userStore'; 
+
+const userStore = useUserStore();
+const role = computed(()=>userStore.user?.role)
   // Tab navigation
   const tabs = [
     { id: 'overview', name: 'OVERVIEW', icon: 'fas fa-user' },

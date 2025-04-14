@@ -6,16 +6,18 @@
 
           <!-- Main Content Section -->
           <div class="container mx-auto px-4 pb-12">
-        <!-- Tabs Navigation -->
-        <ProfileNavigation 
-          :tabs="tabs" 
-          :active-tab="activeTab" 
-          @change-tab="activeTab = $event" 
-        />
-        
+        <!-- <Tabs Navigation -->
+            <ProfileNavigation 
+            :tabs="tabs" 
+            :active-tab="activeTab" 
+            @change-tab="activeTab = $event" 
+            :role="user.role"
+            /> 
+           
         <!-- Tab Content -->
         <div class="mt-6">
-          <ProfileOverview v-if="activeTab === 'overview'" :user="user" />
+            
+            <ProfileOverview v-if="activeTab === 'overview'" :user="user" :role="user.role"  />
           <ProfileClassroom v-else-if="activeTab === 'classroom'" :classroom="classroom"    />
           <!-- <ProfileAssignments v-else-if="activeTab === 'assignments'"/>
           <ProfileAbsences v-else-if="activeTab === 'absences'" />
@@ -29,6 +31,7 @@
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
         </div>
+
   </template>
   
   <script setup>
