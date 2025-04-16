@@ -21,25 +21,31 @@
                 <!-- Team Members Photos -->
                 <div class="absolute bottom-0 right-0 p-3 flex justify-end space-x-2">
                   <!-- Delegates -->
-                  <div 
+                  <router-link
+                    v-if="classroom?.teacher"
+                    :to="`/profile/${classroom.teacher.id}`"
                     class="w-10 h-10 rounded-lg overflow-hidden border-2 border-surface transform hover:scale-110 transition-transform cursor-pointer hover:border-primary-400 shadow-lg"
-                    :title="`Coach: ${classroom?.teacher?.name || 'N/A'}`"
+                    :title="`Coach: ${classroom.teacher.name}`"
                   >
-                    <img :src="classroom?.teacher?.image_url" :alt="classroom?.teacher?.name" class="w-full h-full object-cover">
-                  </div>
-                  <div 
+                    <img :src="classroom.teacher.image_url" :alt="classroom.teacher.name" class="w-full h-full object-cover">
+                  </router-link>
+                  <router-link
+                    v-if="classroom?.delegate"
+                    :to="`/profile/${classroom.delegate.id}`"
                     class="w-10 h-10 rounded-lg overflow-hidden border-2 border-surface transform hover:scale-110 transition-transform cursor-pointer hover:border-primary-400 shadow-lg"
-                    :title="`Delegate: ${classroom?.delegate?.name || 'N/A'}`"
+                    :title="`Delegate: ${classroom.delegate.name}`"
                   >
-                    <img :src="classroom?.delegate?.image_url" :alt="classroom?.delegate?.name" class="w-full h-full object-cover">
-                  </div>
-                  <!-- Trainer -->
-                  <div 
+                    <img :src="classroom.delegate.image_url" :alt="classroom.delegate.name" class="w-full h-full object-cover">
+                  </router-link>
+                  <!-- Trainer (first student) -->
+                  <router-link
+                    v-if="classroom?.students?.length > 0"
+                    :to="`/profile/${classroom.students[0].id}`"
                     class="w-10 h-10 rounded-lg overflow-hidden border-2 border-primary-500 transform hover:scale-110 transition-transform cursor-pointer shadow-glow"
-                    :title="`Trainer: ${classroom?.students?.[0]?.name || 'N/A'}`"
+                    :title="`Trainer: ${classroom.students[0].name}`"
                   >
-                    <img :src="classroom?.students?.[0]?.image_url" :alt="classroom?.students?.[0]?.name" class="w-full h-full object-cover">
-                  </div>
+                    <img :src="classroom.students[0].image_url" :alt="classroom.students[0].name" class="w-full h-full object-cover">
+                  </router-link>
                 </div>
               </div>
               
