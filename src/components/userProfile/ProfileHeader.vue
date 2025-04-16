@@ -28,7 +28,7 @@
               </div>
   
               <!-- Points Display -->
-              <div class="points-display">
+              <div v-if="user.role === 'student'"  class="points-display">
                 <span class="points-value">{{ user.Total_points }}</span>
                 <span class="points-label">YC</span>
               </div>
@@ -43,7 +43,8 @@
                 <!-- Level Badge -->
                 <div class="level-badge-container">
                   <div class="level-badge" :class="getLevelClass(user.level)">
-                    <span class="level-text">{{ user.level }}</span>
+                    <span v-if="user.role !== 'student'" class="level-text">{{ user.level ||"s"}}</span>
+                    <span v-else class="level-text">{{ user.level || "std" }}</span>
                   </div>
                 </div>
               </div>
@@ -408,5 +409,8 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
-
+.level-default {
+  background: linear-gradient(135deg, #b45309, #f59e0b);
+  color: white;
+}
 </style>

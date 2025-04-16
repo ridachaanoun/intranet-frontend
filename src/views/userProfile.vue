@@ -1,5 +1,4 @@
 <template>
-    <div class="id">User ID: {{ id }}</div>
     <div v-if="user" class="bg-background min-h-screen">
 
         <ProfileHeader  :user="user" />
@@ -19,9 +18,9 @@
             
             <ProfileOverview v-if="activeTab === 'overview'" :user="user" :role="user.role"  />
           <ProfileClassroom v-else-if="activeTab === 'classroom'" :classroom="classroom"    />
-          <!-- <ProfileAssignments v-else-if="activeTab === 'assignments'"/>
-          <ProfileAbsences v-else-if="activeTab === 'absences'" />
-          <ProfileCursus v-else-if="activeTab === 'cursus'" />  -->
+          <ProfileAssignments v-else-if="activeTab === 'assignments'" :user="user"/>
+          <!-- <ProfileAbsences v-else-if="activeTab === 'absences'" />
+          <ProfileCursus v-else-if="activeTab === 'cursus'" />   -->
         </div>
 
       </div>
@@ -31,7 +30,6 @@
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
         </div>
-
   </template>
   
   <script setup>
@@ -41,6 +39,7 @@
   import ProfileNavigation from '@/components/profile/ProfileNavigation.vue';
   import ProfileOverview from '@/components/userProfile/ProfileOverview.vue';
   import ProfileClassroom from '@/components/userProfile/ProfileClassroom.vue';
+  import ProfileAssignments from '@/components/userProfile/ProfileAssignments.vue';
   const props = defineProps({
     id: {
       type: Number,

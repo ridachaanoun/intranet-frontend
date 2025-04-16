@@ -28,7 +28,7 @@
             </div>
 
             <!-- Points Display -->
-            <div class="points-display">
+            <div v-if="user.role === 'student'"  class="points-display">
               <span class="points-value">{{ user.Total_points }}</span>
               <span class="points-label">YC</span>
             </div>
@@ -43,7 +43,8 @@
               <!-- Level Badge -->
               <div class="level-badge-container">
                 <div class="level-badge" :class="getLevelClass(user.level)">
-                  <span class="level-text">{{ user.level }}</span>
+                  <span v-if="user.role !== 'student'" class="level-text">{{ user.level ||"s"}}</span>
+                  <span v-else class="level-text">{{ user.level || "std" }}</span>
                 </div>
               </div>
             </div>
@@ -52,17 +53,17 @@
             <div class="info-grid">
               <div class="info-item">
                 <span class="info-label">Level</span>
-                <span class="info-value">{{ user.level }}</span>
+                <span class="info-value">{{ user.level || 'N/A'}}</span>
               </div>
 
               <div class="info-item">
                 <span class="info-label">Classroom</span>
-                <span class="info-value">{{ user.classroom }}</span>
+                <span class="info-value">{{ user.classroom || 'N/A'}}</span>
               </div>
 
               <div class="info-item">
                 <span class="info-label">Promotion</span>
-                <span class="info-value">{{ user.account_info.promotion.year || 'N/A' }}</span>
+                <span class="info-value">{{ user.account_info?.promotion?.year || 'N/A' }}</span>
               </div>
 
               <div class="info-item">
@@ -358,9 +359,13 @@ const getLevelClass = (level) => {
   background: linear-gradient(135deg, #b45309, #f59e0b);
   color: white;
 }
+.level-default {
+  background: linear-gradient(135deg, #b45309, #f59e0b);
+  color: white;
+}
 
 .level-a2 {
-  background: linear-gradient(135deg, #0369a1, #0ea5e9);
+  background: linear-gradient(135deg, #0369a1, #dee90e);
   color: white;
 }
 
