@@ -68,7 +68,7 @@
 
               <div class="info-item">
                 <span class="info-label">Campus</span>
-                <span class="info-value">{{ user.account_info.campus || 'N/A' }}</span>
+                <span class="info-value">{{ user.account_info?.campus || 'N/A' }}</span>
               </div>
             </div>
           </div>
