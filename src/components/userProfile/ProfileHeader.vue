@@ -53,12 +53,12 @@
               <div class="info-grid">
                 <div class="info-item">
                   <span class="info-label">Level</span>
-                  <span class="info-value">{{ user.level }}</span>
+                  <span class="info-value">{{ user.level || 'N/A'}}</span>
                 </div>
   
                 <div class="info-item">
                   <span class="info-label">Classroom</span>
-                  <span class="info-value">{{ user.classroom }}</span>
+                  <span class="info-value">{{ user.classroom || 'N/A'}}</span>
                 </div>
   
                 <div class="info-item">
@@ -69,6 +69,10 @@
                 <div class="info-item">
                   <span class="info-label">Campus</span>
                   <span class="info-value">{{ user.account_info?.campus || 'N/A' }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Role</span>
+                  <span class="info-value">{{ user.role || 'N/A' }}</span>
                 </div>
               </div>
             </div>
