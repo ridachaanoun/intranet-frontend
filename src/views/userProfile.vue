@@ -1,5 +1,5 @@
 <template>
-    <div v-if="user" class="bg-background min-h-screen">
+    <div v-if="user && !loading" class="bg-background min-h-screen">
 
         <ProfileHeader  :user="user" />
 
@@ -34,7 +34,7 @@
   
   <script setup>
   import api from '@/axios';
-  import { ref } from 'vue';
+  import { ref, onMounted, watch } from 'vue';
   import ProfileHeader from '@/components/userProfile/ProfileHeader.vue';
   import ProfileNavigation from '@/components/profile/ProfileNavigation.vue';
   import ProfileOverview from '@/components/userProfile/ProfileOverview.vue';
@@ -42,27 +42,42 @@
   import ProfileAssignments from '@/components/userProfile/ProfileAssignments.vue';
   import ProfileAbsences from '@/components/userProfile/ProfileAbsences.vue';
   import ProfileCursus from '@/components/userProfile/ProfileCursus.vue';
-  const props = defineProps({
-    id: {
-      type: Number,
-      required: true,
-    },
-  });
+  import { useRoute } from 'vue-router';
   
   const user = ref(null);
   const classroom = ref(null);
+  const loading = ref(false)
+  const route = useRoute();
   
   async function fetchUser(id) {
     try {
+      loading.value = true
       const resp = await api.get(`user-details/${id}`);
-      user.value = await resp.data.user; 
-      classroom.value = await resp.data.lastClassroom; 
+      user.value = resp.data.user;
+      classroom.value = resp.data.lastClassroom;
     } catch (error) {
       console.error('Error fetching user:', error);
+      user.value = null;
+      classroom.value = null;
+    }finally{
+      loading.value = false
     }
   }
   
-  fetchUser(props.id);
+  // Fetch user on initial mount
+  onMounted(() => {
+    fetchUser(route.params.id);
+  });
+  
+  // Refetch user whenever the route param changes
+  watch(
+    () => route.params.id,
+    (newId) => {
+      fetchUser(newId);
+      
+      
+    }
+  );
   
   // Tab navigation
   const tabs = [
@@ -71,6 +86,6 @@
     { id: 'assignments', name: 'ASSIGNMENTS', icon: 'fas fa-tasks' },
     { id: 'absences', name: 'ABSENCES', icon: 'fas fa-calendar-check' },
     { id: 'cursus', name: 'CURSUS', icon: 'fas fa-graduation-cap' }
-  ]
-  const activeTab = ref('overview')
+  ];
+  const activeTab = ref('overview');
   </script>

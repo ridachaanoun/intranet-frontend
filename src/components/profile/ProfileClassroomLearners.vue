@@ -7,10 +7,10 @@
     
     <!-- Learners List -->
     <div class="max-h-[750px] overflow-y-auto scrollbar scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-      <a 
+      <router-link 
         v-for="learner in learners" 
         :key="learner.id" 
-        :href="`/profile/${learner.id}`" 
+        :to="`/profile/${learner.id}`" 
         class="flex items-center px-4 py-3 border-b border-gray-100 hover:bg-surface-hover transition-colors"
       >
         <!-- User Image -->
@@ -32,7 +32,7 @@
         <div class="flex-shrink-0 ml-2">
           <i class="fas fa-angle-right text-lg text-gray-500"></i>
         </div>
-      </a>
+      </router-link>
       
       <!-- Empty State -->
       <div v-if="learners.length === 0" class="p-6 text-center text-text-secondary">
