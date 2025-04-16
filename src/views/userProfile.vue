@@ -19,8 +19,8 @@
             <ProfileOverview v-if="activeTab === 'overview'" :user="user" :role="user.role"  />
           <ProfileClassroom v-else-if="activeTab === 'classroom'" :classroom="classroom"    />
           <ProfileAssignments v-else-if="activeTab === 'assignments'" :user="user"/>
-          <!-- <ProfileAbsences v-else-if="activeTab === 'absences'" />
-          <ProfileCursus v-else-if="activeTab === 'cursus'" />   -->
+           <ProfileAbsences v-else-if="activeTab === 'absences'" :id="user.id"/>
+          <!-- <ProfileCursus v-else-if="activeTab === 'cursus'" />   -->
         </div>
 
       </div>
@@ -40,6 +40,7 @@
   import ProfileOverview from '@/components/userProfile/ProfileOverview.vue';
   import ProfileClassroom from '@/components/userProfile/ProfileClassroom.vue';
   import ProfileAssignments from '@/components/userProfile/ProfileAssignments.vue';
+  import ProfileAbsences from '@/components/userProfile/ProfileAbsences.vue';
   const props = defineProps({
     id: {
       type: Number,
