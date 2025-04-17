@@ -62,6 +62,21 @@
           <i class="fas fa-map-marker-alt text-primary-400"></i>
         </div>
       </div>
+      <!-- Role Filter -->
+      <div class="relative">
+        <select 
+          v-model="selectedRole"
+          class="appearance-none bg-surface-hover w-full rounded-full px-5 py-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-400 cursor-pointer pr-12"
+        >
+          <option value="">All Roles</option>
+          <option v-for="role in roles" :key="role.value" :value="role.value">
+        {{ role.label }}
+          </option>
+        </select>
+        <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+          <i class="fas fa-user-tag text-primary-400"></i>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -145,7 +160,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import api from '@/axios';
 
 const users = ref([]);
@@ -157,12 +172,18 @@ const per_page = 10;
 const searchQuery = ref('');
 const selectedGrade = ref('');
 const selectedCampus = ref('');
+const selectedRole = ref('');
 const loading = ref(false);
 
 const grades = [
-  { value: 'sas', label: 'SAS' },
+  { value: 'SAS', label: 'SAS' },
   { value: 'A1', label: '1ère Année' },
   { value: 'A2', label: '2ème Année' },
+];
+const roles = [
+  { value: 'admin', label: 'admin' },
+  { value: 'student', label: 'student' },
+  { value: 'teacher', label: 'teacher' },
 ];
 
 const campuses = [
@@ -170,25 +191,43 @@ const campuses = [
   { value: 'Safi', label: 'Safi' }
 ];
 
+
+let debounceTimeout;
+watch(searchQuery, () => {
+  clearTimeout(debounceTimeout);
+  debounceTimeout = setTimeout(() => {
+    fetchUsers(1);
+  }, 1000);
+});
+
 async function fetchUsers(page = 1) {
-  loading.value = true
+  loading.value = true;
   try {
-    const response = await api.get(`users?page=${page}&per_page=${per_page}`);
+    const params = {
+      query: searchQuery.value || null,
+      role: selectedRole.value || null,
+      campus: selectedCampus.value || null,
+      level: selectedGrade.value || null,
+      page: page,
+      per_page: per_page,
+    };
+
+    const response = await api.get('users/search', { params });
     users.value = response.data.users.map(user => ({
       id: user.id,
       name: user.name,
       email: user.email,
       campus: user.campus || '',
       grade: user.level ? user.level : (user.role === 'student' ? 'std' : 's'),
-      profilePicture: user.image || 'https://via.placeholder.com/150'
+      profilePicture: user.image || 'https://via.placeholder.com/150',
     }));
     totalUsers.value = response.data.total;
     currentPage.value = response.data.current_page;
     totalPages.value = response.data.last_page;
   } catch (error) {
     console.error('Error fetching users:', error);
-  }finally{
-    loading.value= false
+  } finally {
+    loading.value = false;
   }
 }
 
@@ -244,6 +283,10 @@ const displayedPages = computed(() => {
     pages.push(totalPages.value);
   }
   return pages;
+});
+
+watch([selectedRole, selectedCampus, selectedGrade], () => {
+  fetchUsers(1);
 });
 </script>
 
