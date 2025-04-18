@@ -123,7 +123,7 @@
       </svg>
     </div>
   <!-- Pagination -->
-  <div class="flex justify-center mt-10">
+  <div class="flex justify-center mt-10" v-if="totalPages > 1">
     <nav class="flex items-center space-x-2 bg-surface px-2 py-1 rounded-full shadow-card">
       <button 
         @click="prevPage" 
