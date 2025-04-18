@@ -8,7 +8,16 @@ export const useAppStore = defineStore('app', () => {
   const isMobile = ref(window.innerWidth < 768)
   const currentUser = ref('ridachaanoun')
   const currentDateTime = ref('2025-03-08 12:47:57') // Updated date/time
+  const campuses = [
+    { value: 'Youssoufia', label: 'Youssoufia' },
+    { value: 'Safi', label: 'Safi' },
+  ];
   
+  const levels = [
+    { value: '1ère Année', label: '1ère Année' },
+    { value: '2ème Année', label: '2ème Année' },
+    { value: 'SAS', label: 'SAS' },
+  ];
   // Actions
   function toggleSidebar() {
     sidebarOpen.value = !sidebarOpen.value
@@ -45,6 +54,8 @@ export const useAppStore = defineStore('app', () => {
     toggleSidebar,
     updateSearchQuery,
     handleResize,
-    updateDateTime
+    updateDateTime,
+    levels,
+    campuses
   }
 })
