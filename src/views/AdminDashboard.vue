@@ -2,12 +2,12 @@
   <div class="admin-dashboard min-h-screen bg-background">
     <!-- Admin Dashboard Layout -->
     <div class="flex">
-      <!-- Main Content - Removed ml-64 class since sidebar is gone -->
+      <!-- Main Content -->
       <div class="flex-1 p-8">
         <!-- Header Bar -->
         <AdminHeader :section-title="sectionTitle" />
 
-        <!-- Navigation Tabs - Added to replace sidebar navigation -->
+        <!-- Navigation Tabs -->
         <div class="mb-8 mt-4">
           <div class="flex overflow-x-auto space-x-1 bg-surface rounded-xl p-1 glass-effect">
             <button 
@@ -88,49 +88,40 @@ import AddUserModal from '@/components/admin/AddUserModal.vue';
 import AddClassModal from '@/components/admin/AddClassModal.vue';
 import { useAppStore } from '@/stores/app';
 
-    // Get store reference
-    const appStore = useAppStore();
-    
-    // Set the current date/time
-    appStore.currentDateTime ;
-    appStore.currentUser ;
-    
-    // Active section state
-    const activeSection = ref('dashboard');
-    
-    // Modal states
-    const showAddUserModal = ref(false);
-    const showAddClassModal = ref(false);
-    
-    // Current user and date/time from store
-    const currentUser = computed(() => appStore.currentUser);
-    const currentDateTime = computed(() => appStore.currentDateTime);
-    
-    // Computed properties
-    const sectionTitle = computed(() => {
-      switch(activeSection.value) {
-        case 'dashboard': return 'Admin Dashboard';
-        case 'users': return 'User Management';
-        case 'classes': return 'Class Management';
-        default: return 'Admin Dashboard';
-      }
-    });
-    
-    // Methods
-    const handleAddUser = (userData) => {
-      console.log('Adding new user:', userData);
-      // API call would go here
-      showAddUserModal.value = false;
-      alert('User added successfully!');
-    };
-    
-    const handleAddClass = (classData) => {
-      console.log('Adding new class:', classData);
-      // API call would go here
-      showAddClassModal.value = false;
-      alert('Class added successfully!');
-    };
-    
+const appStore = useAppStore();
+
+// Active section state
+const activeSection = ref('dashboard');
+
+const showAddUserModal = ref(false);
+const showAddClassModal = ref(false);
+
+const currentUser = computed(() => appStore.currentUser);
+const currentDateTime = computed(() => appStore.currentDateTime);
+
+// Computed properties
+const sectionTitle = computed(() => {
+  switch (activeSection.value) {
+    case 'dashboard':
+      return 'Admin Dashboard';
+    case 'users':
+      return 'User Management';
+    case 'classes':
+      return 'Class Management';
+    default:
+      return 'Admin Dashboard';
+  }
+});
+
+const handleAddUser = (userData) => {
+  console.log('User added:', userData);
+  showAddUserModal.value = false;
+};
+
+const handleAddClass = (classData) => {
+  console.log('Class added:', classData);
+  showAddClassModal.value = false;
+};
 </script>
 
 <style scoped>
