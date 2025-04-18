@@ -43,7 +43,7 @@
                     <img :src="classroom.delegate.image_url" :alt="classroom.delegate.name" class="w-full h-full object-cover">
                   </router-link>
                   <!-- Trainer -->
-                  <router-link
+                  <router-link v-if="classroom.students[0]"
                     :to="`/profile/${classroom.students[0].id}`"
                     class="w-10 h-10 rounded-lg overflow-hidden border-2 border-primary-500 transform hover:scale-110 transition-transform cursor-pointer shadow-glow"
                     :title="`Trainer: ${classroom.students[0].name}`"
