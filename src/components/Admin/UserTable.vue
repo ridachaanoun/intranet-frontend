@@ -114,50 +114,41 @@
     </div>
   </div>
 </template>
+<script setup>
+import { defineProps, defineEmits } from 'vue';
 
-<script>
-export default {
-  name: 'UserTable',
-  props: {
-    users: {
-      type: Array,
-      required: true
-    }
-  },
-  emits: ['edit-user', 'delete-user'],
-  setup() {
-    const getRoleBadgeClass = (role) => {
-      switch(role) {
-        case 'admin': return 'bg-secondary-500/20 text-secondary-400';
-        case 'teacher': return 'bg-primary-500/20 text-primary-400';
-        case 'student': return 'bg-accent-500/20 text-accent-400';
-        default: return 'bg-gray-500/20 text-gray-400';
-      }
-    };
-    
-    const getStatusBadgeClass = (status) => {
-      switch(status) {
-        case 'active': return 'bg-green-500/20 text-green-500';
-        case 'inactive': return 'bg-gray-500/20 text-gray-400';
-        case 'suspended': return 'bg-red-500/20 text-red-500';
-        default: return 'bg-gray-500/20 text-gray-400';
-      }
-    };
-    
-    const formatRole = (role) => {
-      return role.charAt(0).toUpperCase() + role.slice(1);
-    };
-    
-    const formatStatus = (status) => {
-      return status.charAt(0).toUpperCase() + status.slice(1);
-    };
-    
-    return {
-      getRoleBadgeClass,
-      getStatusBadgeClass,
-      formatRole,
-      formatStatus
-    };
+defineProps({
+  users: {
+    type: Array,
+    required: true
   }
+});
+
+defineEmits(['edit-user', 'delete-user']);
+
+const getRoleBadgeClass = (role) => {
+  switch (role) {
+    case 'admin': return 'bg-secondary-500/20 text-secondary-400';
+    case 'teacher': return 'bg-primary-500/20 text-primary-400';
+    case 'student': return 'bg-accent-500/20 text-accent-400';
+    default: return 'bg-gray-500/20 text-gray-400';
+  }
+};
+
+const getStatusBadgeClass = (status) => {
+  switch (status) {
+    case 'active': return 'bg-green-500/20 text-green-500';
+    case 'inactive': return 'bg-gray-500/20 text-gray-400';
+    case 'suspended': return 'bg-red-500/20 text-red-500';
+    default: return 'bg-gray-500/20 text-gray-400';
+  }
+};
+
+const formatRole = (role) => {
+  return role.charAt(0).toUpperCase() + role.slice(1);
+};
+
+const formatStatus = (status) => {
+  return status.charAt(0).toUpperCase() + status.slice(1);
 };
 </script>

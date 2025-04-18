@@ -21,20 +21,19 @@
     </div>
   </template>
   
-  <script>
-  export default {
-    name: 'StatCard',
-    props: {
-      title: String,
-      value: String,
-      trend: String,
-      icon: String,
-      color: {
-        type: String,
-        default: 'primary'
-      }
+  <script setup>
+    import { defineProps } from 'vue';
+
+  const props = defineProps({
+    title: String,
+    value: String,
+    trend: String,
+    icon: String,
+    color: {
+      type: String,
+      default: 'primary'
     }
-  };
+});
   </script>
   
   <style scoped>

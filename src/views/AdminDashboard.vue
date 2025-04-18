@@ -78,7 +78,7 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, computed } from 'vue';
 import AdminHeader from '@/components/admin/AdminHeader.vue';
 import DashboardOverview from '@/components/admin/DashboardOverview.vue';
@@ -88,17 +88,6 @@ import AddUserModal from '@/components/admin/AddUserModal.vue';
 import AddClassModal from '@/components/admin/AddClassModal.vue';
 import { useAppStore } from '@/stores/app';
 
-export default {
-  name: 'AdminDashboard',
-  components: {
-    AdminHeader,
-    DashboardOverview,
-    UsersManagement,
-    ClassesManagement,
-    AddUserModal,
-    AddClassModal
-  },
-  setup() {
     // Get store reference
     const appStore = useAppStore();
     
@@ -142,18 +131,6 @@ export default {
       alert('Class added successfully!');
     };
     
-    return {
-      activeSection,
-      showAddUserModal,
-      showAddClassModal,
-      sectionTitle,
-      currentUser,
-      currentDateTime,
-      handleAddUser,
-      handleAddClass
-    };
-  }
-};
 </script>
 
 <style scoped>

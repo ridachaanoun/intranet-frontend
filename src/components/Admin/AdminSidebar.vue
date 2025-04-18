@@ -57,28 +57,19 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { computed } from 'vue';
 import { useAppStore } from '@/stores/app';
 
-export default {
-  name: 'AdminSidebar',
-  props: {
-    sidebarOpen: {
-      type: Boolean,
-      default: true
-    }
-  },
-  setup() {
-    const appStore = useAppStore();
-    
-    const currentUser = computed(() => appStore.currentUser);
-    const currentDateTime = computed(() => appStore.currentDateTime);
-    
-    return {
-      currentUser,
-      currentDateTime
-    };
+defineProps({
+  sidebarOpen: {
+    type: Boolean,
+    default: true
   }
-};
+});
+
+// State from App Store
+const appStore = useAppStore();
+const currentUser = computed(() => appStore.currentUser);
+const currentDateTime = computed(() => appStore.currentDateTime);
 </script>

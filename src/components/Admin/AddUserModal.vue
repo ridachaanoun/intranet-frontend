@@ -130,7 +130,7 @@
             >
               Cancel
             </button>
-            <button 
+            <button @click="$emit('add-user')"
               type="submit"
               class="px-4 py-2 rounded-lg bg-accent-600 hover:bg-accent-700 text-white transition-colors"
             >
@@ -142,54 +142,42 @@
     </div>
   </template>
   
-  <script>
+  <script setup>
   import { ref } from 'vue';
   import { useAppStore } from '@/stores/app';
   
-  export default {
-    name: 'AddUserModal',
-    emits: ['close', 'add-user'],
-    setup(props, { emit }) {
-      const appStore = useAppStore();
-      const currentDateTime = ref('2025-03-13 14:12:04'); // Using the provided static time
+  // State
+  const currentDateTime = ref('2025-03-13 14:12:04'); // Using the provided static time
+  const formData = ref({
+    firstName: '',
+    lastName: '',
+    email: '',
+    username: '',
+    role: '',
+    class: '',
+    password: '',
+    confirmPassword: ''
+  });
+  const passwordError = ref('');
   
-      const formData = ref({
-        firstName: '',
-        lastName: '',
-        email: '',
-        username: '',
-        role: '',
-        class: '',
-        password: '',
-        confirmPassword: ''
-      });
-      
-      const passwordError = ref('');
-      
-      const submitForm = () => {
-        // Validate passwords match
-        if (formData.value.password !== formData.value.confirmPassword) {
-          passwordError.value = 'Passwords do not match';
-          return;
-        }
-        
-        passwordError.value = '';
-        
-        // Emit event with form data
-        emit('add-user', { 
-          ...formData.value, 
-          timestamp: currentDateTime.value,
-          createdBy: 'ridachaanoun' // Using the provided username
-        });
-      };
-      
-      return {
-        formData,
-        passwordError,
-        currentDateTime,
-        submitForm
-      };
+  defineEmits(['close', 'add-user']);
+  
+  // Methods
+  const submitForm = () => {
+    // Validate passwords match
+    if (formData.value.password !== formData.value.confirmPassword) {
+      passwordError.value = 'Passwords do not match';
+      return;
     }
+  
+    passwordError.value = '';
+  
+    // Emit event with form data
+    emit('add-user', { 
+      ...formData.value, 
+      timestamp: currentDateTime.value,
+      createdBy: 'ridachaanoun' // Using the provided username
+    });
   };
   </script>
   

@@ -31,17 +31,11 @@
     </div>
   </template>
   
-  <script>
+  <script setup>
   import { ref, computed } from 'vue';
   import UserTable from './UserTable.vue';
   
-  export default {
-    name: 'UsersManagement',
-    components: {
-      UserTable
-    },
-    emits: ['add-user'],
-    setup() {
+  defineEmits(['add-user']);
       const searchQuery = ref('');
       
       const users = ref([
@@ -100,12 +94,5 @@
         // Implementation would go here
       };
       
-      return {
-        searchQuery,
-        filteredUsers,
-        editUser,
-        deleteUser
-      };
-    }
-  };
+
   </script>

@@ -136,44 +136,30 @@
       </div>
     </div>
   </template>
-  
-  <script>
+  <script setup>
   import { ref } from 'vue';
-  import { useAppStore } from '@/stores/app';
   
-  export default {
-    name: 'AddClassModal',
-    emits: ['close', 'add-class'],
-    setup(props, { emit }) {
-      const appStore = useAppStore();
-      const currentDateTime = ref('2025-03-13 14:12:04'); // Using the provided static time
-      
-      const formData = ref({
-        name: '',
-        level: '',
-        teacher: '',
-        campus: '',
-        promotion: '',
-        icon: 'fas fa-laptop-code',
-        color: 'primary',
-        students: 0
-      });
-      
-      const submitForm = () => {
-        // Emit event with form data
-        emit('add-class', { 
-          ...formData.value, 
-          timestamp: currentDateTime.value,
-          createdBy: 'ridachaanoun' // Using the provided username
-        });
-      };
-      
-      return {
-        formData,
-        currentDateTime,
-        submitForm
-      };
-    }
+  defineEmits(['close', 'add-class']);
+  
+  const currentDateTime = ref('2025-03-13 14:12:04'); 
+  const formData = ref({
+    name: '',
+    level: '',
+    teacher: '',
+    campus: '',
+    promotion: '',
+    icon: 'fas fa-laptop-code',
+    color: 'primary',
+    students: 0
+  });
+  
+  // Methods
+  const submitForm = () => {
+    emit('add-class', { 
+      ...formData.value, 
+      timestamp: currentDateTime.value,
+      createdBy: 'ridachaanoun' 
+    });
   };
   </script>
   

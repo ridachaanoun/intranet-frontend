@@ -81,17 +81,17 @@
     </div>
   </template>
   
-  <script>
-  export default {
-    name: 'ClassCard',
-    props: {
-      classData: {
-        type: Object,
-        required: true
-      }
-    },
-    emits: ['edit', 'manage-students']
-  };
+  <script setup>
+  import { defineProps, defineEmits } from 'vue';
+  
+  defineProps({
+    classData: {
+      type: Object,
+      required: true
+    }
+  });
+  
+  defineEmits(['edit', 'manage-students']);
   </script>
   
   <style scoped>

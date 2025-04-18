@@ -65,84 +65,74 @@
     </div>
   </template>
   
-  <script>
+  <script setup>
   import { ref, computed } from 'vue';
   import ClassCard from './ClassCard.vue';
   
-  export default {
-    name: 'ClassesManagement',
-    components: {
-      ClassCard
+  // Emits
+  defineEmits(['add-class']);
+  
+  // State
+  const searchQuery = ref('');
+  
+  const classes = ref([
+    {
+      id: 1,
+      name: 'Aliens',
+      level: '1ère Année',
+      teacher: 'Said Aabilla',
+      students: 22,
+      campus: 'Youssoufia',
+      promotion: '2024-2025',
+      color: 'primary',
+      icon: 'fas fa-laptop-code'
     },
-    emits: ['add-class'],
-    setup() {
-      const searchQuery = ref('');
-      
-      const classes = ref([
-        {
-          id: 1,
-          name: 'Aliens',
-          level: '1ère Année',
-          teacher: 'Said Aabilla',
-          students: 22,
-          campus: 'Youssoufia',
-          promotion: '2024-2025',
-          color: 'primary',
-          icon: 'fas fa-laptop-code'
-        },
-        {
-          id: 2,
-          name: 'Web Warriors',
-          level: '2ème Année',
-          teacher: 'Abdelhafid Belfqir',
-          students: 18,
-          campus: 'Youssoufia',
-          promotion: '2024-2025',
-          color: 'accent',
-          icon: 'fas fa-code'
-        },
-        {
-          id: 3,
-          name: 'Data Masters',
-          level: '2ème Année',
-          teacher: 'Sarah Moukrim',
-          students: 20,
-          campus: 'Youssoufia',
-          promotion: '2024-2025',
-          color: 'secondary',
-          icon: 'fas fa-database'
-        }
-      ]);
-      
-      const filteredClasses = computed(() => {
-        if (!searchQuery.value) return classes.value;
-        
-        const query = searchQuery.value.toLowerCase();
-        return classes.value.filter(c => 
-          c.name.toLowerCase().includes(query) ||
-          c.level.toLowerCase().includes(query) ||
-          c.teacher.toLowerCase().includes(query) ||
-          c.campus.toLowerCase().includes(query) ||
-          c.promotion.toLowerCase().includes(query)
-        );
-      });
-      
-      const editClass = (classId) => {
-        console.log('Edit class with ID:', classId);
-        // Implementation would go here
-      };
-      
-      const manageStudents = (classId) => {
-        console.log('Manage students for class ID:', classId);
-        // Implementation would go here
-      };
-      
-      return {
-        searchQuery,
-        filteredClasses,
-        editClass,
-        manageStudents
-      };
+    {
+      id: 2,
+      name: 'Web Warriors',
+      level: '2ème Année',
+      teacher: 'Abdelhafid Belfqir',
+      students: 18,
+      campus: 'Youssoufia',
+      promotion: '2024-2025',
+      color: 'accent',
+      icon: 'fas fa-code'
+    },
+    {
+      id: 3,
+      name: 'Data Masters',
+      level: '2ème Année',
+      teacher: 'Sarah Moukrim',
+      students: 20,
+      campus: 'Youssoufia',
+      promotion: '2024-2025',
+      color: 'secondary',
+      icon: 'fas fa-database'
     }
+  ]);
+  
+  // Computed property for filtered classes
+  const filteredClasses = computed(() => {
+    if (!searchQuery.value) return classes.value;
+  
+    const query = searchQuery.value.toLowerCase();
+    return classes.value.filter(c => 
+      c.name.toLowerCase().includes(query) ||
+      c.level.toLowerCase().includes(query) ||
+      c.teacher.toLowerCase().includes(query) ||
+      c.campus.toLowerCase().includes(query) ||
+      c.promotion.toLowerCase().includes(query)
+    );
+  });
+  
+  // Methods
+  const editClass = (classId) => {
+    console.log('Edit class with ID:', classId);
+    // Implementation would go here
+  };
+  
+  const manageStudents = (classId) => {
+    console.log('Manage students for class ID:', classId);
+    // Implementation would go here
   };
   </script>

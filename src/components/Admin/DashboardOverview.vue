@@ -58,21 +58,13 @@
     </div>
   </template>
   
-  <script>
+  <script setup>
   import { ref } from 'vue';
   import StatCard from './StatCard.vue';
   import ActivityList from './ActivityList.vue';
   import QuickActions from './QuickActions.vue';
   
-  export default {
-    name: 'DashboardOverview',
-    components: {
-      StatCard,
-      ActivityList,
-      QuickActions
-    },
-    emits: ['add-user', 'add-class', 'assign-students'],
-    setup() {
+  defineEmits(['add-user', 'add-class', 'assign-students'])
       const recentActivities = ref([
         {
           id: 1,
@@ -121,9 +113,4 @@
         }
       ]);
       
-      return {
-        recentActivities
-      };
-    }
-  };
   </script>

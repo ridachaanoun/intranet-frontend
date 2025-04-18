@@ -33,9 +33,6 @@
     </div>
   </template>
   
-  <script>
-  export default {
-    name: 'QuickActions',
-    emits: ['add-user', 'add-class', 'assign-students']
-  };
+  <script setup>
+  defineEmits(['add-user', 'add-class', 'assign-students']);
   </script>

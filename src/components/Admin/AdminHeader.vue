@@ -15,25 +15,19 @@
     </div>
   </template>
   
-  <script>
+  <script setup>
   import { computed } from 'vue';
   import { useAppStore } from '@/stores/app';
   
-  export default {
-    name: 'AdminHeader',
-    props: {
-      sectionTitle: {
-        type: String,
-        required: true
-      }
-    },
-    setup() {
-      const appStore = useAppStore();
-      const currentDateTime = computed(() => appStore.currentDateTime);
-      
-      return {
-        currentDateTime
-      };
+  // Props
+  defineProps({
+    sectionTitle: {
+      type: String,
+      required: true
     }
-  };
+  });
+  
+  // State from App Store
+  const appStore = useAppStore();
+  const currentDateTime = computed(() => appStore.currentDateTime);
   </script>

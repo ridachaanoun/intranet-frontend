@@ -23,14 +23,11 @@
     </div>
   </template>
   
-  <script>
-  export default {
-    name: 'ActivityList',
-    props: {
-      activities: {
-        type: Array,
-        default: () => []
-      }
+  <script setup>
+  defineProps({
+    activities: {
+      type: Array,
+      default: () => []
     }
-  };
+  });
   </script>
