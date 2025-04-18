@@ -18,6 +18,12 @@ export const useAppStore = defineStore('app', () => {
     { value: '2ème Année', label: '2ème Année' },
     { value: 'SAS', label: 'SAS' },
   ];
+
+  const roles = [
+    {value: 'admin', label: 'Admin'},
+    {value: 'student', label: 'Student'},
+    {value: 'teacher', label: 'Teacher'}
+  ]
   // Actions
   function toggleSidebar() {
     sidebarOpen.value = !sidebarOpen.value
@@ -56,6 +62,7 @@ export const useAppStore = defineStore('app', () => {
     handleResize,
     updateDateTime,
     levels,
-    campuses
+    campuses,
+    roles,
   }
 })
