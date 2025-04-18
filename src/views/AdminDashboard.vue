@@ -56,9 +56,8 @@
         />
 
         <!-- Current user and time info -->
-        <div class="mt-8 text-right text-xs text-text-secondary">
-          <p>Current User: @{{ currentUser }}</p>
-          <p>Last updated: {{ currentDateTime }}</p>
+        <div class="mt-8 text-right text-xs text-text-secondary" v-if="currentUser">
+          <p>Current Admin: @{{ currentUser }}</p>
         </div>
       </div>
     </div>
@@ -87,17 +86,20 @@ import ClassesManagement from '@/components/admin/ClassesManagement.vue';
 import AddUserModal from '@/components/admin/AddUserModal.vue';
 import AddClassModal from '@/components/admin/AddClassModal.vue';
 import { useAppStore } from '@/stores/app';
+import { useUserStore } from '@/stores/userStore';
 
 const appStore = useAppStore();
+const userStore = useUserStore(); // Access the user store
 
 // Active section state
 const activeSection = ref('dashboard');
 
+userStore.fetchUserData();
+
 const showAddUserModal = ref(false);
 const showAddClassModal = ref(false);
 
-const currentUser = computed(() => appStore.currentUser);
-const currentDateTime = computed(() => appStore.currentDateTime);
+const currentUser = computed(() => userStore.user?.role);
 
 // Computed properties
 const sectionTitle = computed(() => {
