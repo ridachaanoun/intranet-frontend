@@ -126,7 +126,6 @@ const handleAddUser = (payload) => {
 
   recentActivities.value.unshift({
     id: Date.now(),
-    timestamp: new Date().toLocaleString(),
     type: 'user-add',
     icon: 'fas fa-user-plus',
     iconBg: 'bg-primary-500/20',
@@ -137,9 +136,20 @@ const handleAddUser = (payload) => {
   saveActivities();
 };
 
-const handleAddClass = (classData) => {
-  console.log('Class added:', classData);
+const handleAddClass = (classroom) => {
+  console.log('Class added:', classroom);
   showAddClassModal.value = false;
+
+  recentActivities.value.unshift({
+    id: Date.now(),
+    type: 'class-add',
+    icon: 'fas fa-chalkboard',
+    iconBg: 'bg-accent-500/20',
+    iconColor: 'text-accent-400',
+    message: `New class <span class="font-medium">${classroom.name}</span> created`,
+    time: 'Just now'
+  });
+  saveActivities();
 };
 
 const saveActivities = () => {
