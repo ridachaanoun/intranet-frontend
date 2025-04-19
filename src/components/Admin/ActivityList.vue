@@ -10,7 +10,9 @@
         </div>
         <div class="flex-1">
           <p class="text-text-primary" v-html="activity.message"></p>
-          <p class="text-xs text-text-secondary">{{ activity.time }}</p>
+            <p class="text-xs text-text-secondary">
+            {{ formatAgo(activity.id) }}
+            </p>
         </div>
       </div>
       
@@ -24,10 +26,22 @@
   </template>
   
   <script setup>
+  import { computed } from 'vue';
+
   defineProps({
     activities: {
       type: Array,
       default: () => []
     }
   });
+
+  function formatAgo(timestamp) {
+    const now = Date.now();
+    const diff = Math.floor((now - new Date(timestamp)) / 1000);
+    if (diff < 30) return `just now`;
+    if (diff < 60) return `${diff} seconds ago`;
+    if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+    return `${Math.floor(diff / 86400)} days ago`;
+  }
   </script>
