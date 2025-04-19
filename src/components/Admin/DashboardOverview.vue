@@ -59,58 +59,16 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue';
   import StatCard from './StatCard.vue';
   import ActivityList from './ActivityList.vue';
   import QuickActions from './QuickActions.vue';
   
-  defineEmits(['add-user', 'add-class', 'assign-students'])
-      const recentActivities = ref([
-        {
-          id: 1,
-          type: 'user-add',
-          icon: 'fas fa-user-plus',
-          iconBg: 'bg-primary-500/20',
-          iconColor: 'text-primary-400',
-          message: 'New student <span class="font-medium">Fatima Zahra</span> registered',
-          time: '2 hours ago'
-        },
-        {
-          id: 2,
-          type: 'class-add',
-          icon: 'fas fa-chalkboard',
-          iconBg: 'bg-accent-500/20',
-          iconColor: 'text-accent-400',
-          message: 'New class <span class="font-medium">Web Warriors</span> created',
-          time: '5 hours ago'
-        },
-        {
-          id: 3,
-          type: 'user-update',
-          icon: 'fas fa-user-edit',
-          iconBg: 'bg-secondary-500/20',
-          iconColor: 'text-secondary-400',
-          message: 'Teacher <span class="font-medium">Said Aabilla</span> profile updated',
-          time: 'Yesterday'
-        },
-        {
-          id: 4,
-          type: 'assign',
-          icon: 'fas fa-user-plus',
-          iconBg: 'bg-primary-500/20',
-          iconColor: 'text-primary-400',
-          message: 'Students assigned to <span class="font-medium">Aliens</span> class',
-          time: '2 days ago'
-        },
-        {
-          id: 5,
-          type: 'user-update',
-          icon: 'fas fa-user-edit',
-          iconBg: 'bg-accent-500/20',
-          iconColor: 'text-accent-400',
-          message: 'Student <span class="font-medium">Mohamed Amine</span> profile updated',
-          time: '3 days ago'
-        }
-      ]);
-      
+const props = defineProps({
+  recentActivities: {
+    type: Array,
+    default: () => []
+  }
+})
+
+  
   </script>
