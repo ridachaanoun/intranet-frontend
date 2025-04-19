@@ -118,12 +118,33 @@
           <!-- Cover Image -->
           <div>
             <label class="block text-sm font-medium text-text-secondary mb-1">Cover Image</label>
-            <input 
-              type="file" 
-              @change="handleFileUpload" 
-              class="w-full bg-background-element border border-background-light rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400"
-              required
-            >
+            <div class="relative border-2 border-dashed border-background-light rounded-lg p-4 transition-colors hover:border-accent-400">
+              <input 
+                type="file" 
+                id="coverImage"
+                @change="handleFileUpload" 
+                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                accept="image/*"
+                required
+              >
+              <div class="flex flex-col items-center justify-center space-y-2">
+                <div v-if="selectedFile" class="w-full">
+                  <img 
+                    :src="previewUrl" 
+                    class="h-32 object-cover mx-auto rounded-md" 
+                    alt="Selected preview"
+                  />
+                  <p class="text-sm text-text-secondary text-center mt-2 truncate">
+                    {{ selectedFile.name }}
+                  </p>
+                </div>
+                <div v-else>
+                  <i class="fas fa-cloud-upload-alt text-2xl text-text-secondary"></i>
+                  <p class="text-sm text-text-secondary mt-2">Click or drag image to upload</p>
+                  <p class="text-xs text-text-secondary opacity-75">PNG, JPG or JPEG</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -152,7 +173,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useAppStore } from '@/stores/app';
 import Swal from 'sweetalert2';
 import api from '@/axios';
@@ -200,9 +221,40 @@ const filteredStudents = computed(() => {
   );
 });
 
+// Image preview URL
+const previewUrl = computed(() => {
+  if (selectedFile.value) {
+    return URL.createObjectURL(selectedFile.value);
+  }
+  return '';
+});
+
+// Clean up object URL when component is unmounted or file changes
+let objectUrl = null;
+watch(selectedFile, (newFile) => {
+  if (objectUrl) {
+    URL.revokeObjectURL(objectUrl);
+    objectUrl = null;
+  }
+  if (newFile) {
+    objectUrl = URL.createObjectURL(newFile);
+  }
+});
+
+onBeforeUnmount(() => {
+  if (objectUrl) {
+    URL.revokeObjectURL(objectUrl);
+  }
+});
+
 // Handle file upload
 const handleFileUpload = (event) => {
-  selectedFile.value = event.target.files[0];
+  const file = event.target.files[0];
+  if (file) {
+    selectedFile.value = file;
+  } else {
+    selectedFile.value = null;
+  }
 };
 
 // Fetch data from APIs
