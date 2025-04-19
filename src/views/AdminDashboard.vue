@@ -43,6 +43,7 @@
           class="fade-in"
           @add-user="showAddUserModal = true"
           @add-class="showAddClassModal = true"
+          :recentActivities="recentActivities"
         />
         <UsersManagement 
           v-if="activeSection === 'users'" 
@@ -89,7 +90,9 @@ import { useAppStore } from '@/stores/app';
 import { useUserStore } from '@/stores/userStore';
 
 const appStore = useAppStore();
-const userStore = useUserStore(); // Access the user store
+const userStore = useUserStore(); 
+
+const recentActivities = ref([])
 
 // Active section state
 const activeSection = ref('dashboard');
@@ -115,15 +118,43 @@ const sectionTitle = computed(() => {
   }
 });
 
-const handleAddUser = (userData) => {
-  console.log('User added:', userData);
+
+const handleAddUser = (payload) => {
+  const user = payload?.user || payload;
+  console.log('User added:', user);
   showAddUserModal.value = false;
+
+  recentActivities.value.unshift({
+    id: Date.now(),
+    timestamp: new Date().toLocaleString(),
+    type: 'user-add',
+    icon: 'fas fa-user-plus',
+    iconBg: 'bg-primary-500/20',
+    iconColor: 'text-primary-400',
+    message: `New user <span class="font-medium">${user?.name || 'Unknown'}</span> added`,
+    time: 'Just now'
+  });
+  saveActivities();
 };
 
 const handleAddClass = (classData) => {
   console.log('Class added:', classData);
   showAddClassModal.value = false;
 };
+
+const saveActivities = () => {
+    localStorage.setItem('recentActivities', JSON.stringify(recentActivities.value));
+  };
+
+const loadActivities = () => {
+  const storedActivities = localStorage.getItem('recentActivities');
+  if (storedActivities) {
+    recentActivities.value = JSON.parse(storedActivities);
+  }
+};
+
+loadActivities();
+
 </script>
 
 <style scoped>
