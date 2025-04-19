@@ -53,7 +53,7 @@ const visibleDelegates = computed(() => {
         >
           <a href="#" class="relative block mb-3">
             <img 
-              :src="delegate.delegate.img_url" 
+              :src="delegate.delegate.image_url" 
               :alt="delegate.delegate.name" 
               class="w-16 h-16 rounded-full object-cover shadow-sm group-hover:ring-2 group-hover:ring-accent-400 transition-all"
             />

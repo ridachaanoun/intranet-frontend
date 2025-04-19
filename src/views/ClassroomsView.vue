@@ -102,7 +102,7 @@
               <router-link :to="`/classroom/${classroom.id}`" class="block">
                 <div 
                   class="h-44 bg-cover bg-center bg-no-repeat" 
-                  :style="{ backgroundImage: `url('${classroom.cover_image}')` }"
+                  :style="{ backgroundImage: `url('${classroom.cover_image_url}')` }"
                 >
                   <div class="absolute inset-0 bg-gradient-to-t from-background-dark/80 to-transparent"></div>
                 </div>
@@ -225,7 +225,7 @@
             <!-- Card Footer -->
             <div class="px-5 py-3 bg-surface-hover flex justify-center">
               <router-link 
-                :to="`/classroom/${classroom.slug}`" 
+                :to="`/classroom/${classroom.id}`" 
                 class="text-primary-400 hover:text-primary-300 text-sm font-medium flex items-center"
               >
                 View Classroom <i class="fas fa-chevron-right ml-2"></i>
@@ -404,9 +404,12 @@ onMounted(() => {
   fetchClassrooms();
 });
 
+import { useRouter } from 'vue-router';
+const router = useRouter();
+
 function goToProfile(userId) {
   if (userId) {
-    this.$router.push(`/profile/${userId}`);
+    router.push(`/profile/${userId}`);
   }
 }
 

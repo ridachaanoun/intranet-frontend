@@ -12,7 +12,7 @@
             <div class="relative">
                 <div 
                   class="h-44 bg-cover bg-center bg-no-repeat" 
-                  :style="`background-image: url('${classroom.cover_image}')`"
+                  :style="`background-image: url('${classroom.cover_image_url}')`"
                 >
                   <div class="absolute inset-0 bg-gradient-to-t from-background-dark/80 to-transparent"></div>
                 </div>

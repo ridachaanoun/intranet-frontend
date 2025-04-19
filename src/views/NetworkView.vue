@@ -219,7 +219,7 @@ async function fetchUsers(page = 1) {
       email: user.email,
       campus: user.campus || '',
       grade: user.level ? user.level : (user.role === 'student' ? 'std' : 's'),
-      profilePicture: user.image || 'https://via.placeholder.com/150',
+      profilePicture: user.image_url || 'https://via.placeholder.com/150',
     }));
     totalUsers.value = response.data.total;
     currentPage.value = response.data.current_page;
