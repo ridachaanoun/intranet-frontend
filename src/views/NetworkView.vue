@@ -79,7 +79,7 @@
       </div>
     </div>
   </div>
-
+  <div v-if="!loading">
   <!-- Network Grid -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" v-if="!loading">
     <div 
@@ -116,12 +116,7 @@
       <p class="text-text-secondary text-lg">No users found.</p>
     </div>
   </div>
-  <div v-else class="flex items-center justify-center my-[300px] ">
-      <svg class="animate-spin h-8 w-8 text-primary-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-    </div>
+
   <!-- Pagination -->
   <div class="flex justify-center mt-10" v-if="totalPages > 1">
     <nav class="flex items-center space-x-2 bg-surface px-2 py-1 rounded-full shadow-card">
@@ -157,11 +152,21 @@
       </button>
     </nav>
   </div>
+</div>
+  <div v-else class="flex items-center justify-center my-[300px] ">
+      <svg class="animate-spin h-8 w-8 text-primary-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+    </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import api from '@/axios';
+import { useAppStore } from '@/stores/app';
+
+const AppStore = useAppStore() ;
 
 const users = ref([]);
 const totalUsers = ref(0);
@@ -175,21 +180,11 @@ const selectedCampus = ref('');
 const selectedRole = ref('');
 const loading = ref(false);
 
-const grades = [
-  { value: 'SAS', label: 'SAS' },
-  { value: 'A1', label: '1ère Année' },
-  { value: 'A2', label: '2ème Année' },
-];
-const roles = [
-  { value: 'admin', label: 'admin' },
-  { value: 'student', label: 'student' },
-  { value: 'teacher', label: 'teacher' },
-];
+const grades = AppStore.grades;
 
-const campuses = [
-  { value: 'Youssoufia', label: 'Youssoufia' },
-  { value: 'Safi', label: 'Safi' }
-];
+const roles = AppStore.roles;
+
+const campuses = AppStore.campuses;
 
 
 let debounceTimeout;
