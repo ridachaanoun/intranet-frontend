@@ -1,7 +1,13 @@
 <template>
-  <div class="bg-surface rounded-xl shadow-card glass-effect overflow-hidden">
+  <div class="bg-surface rounded-xl shadow-card glass-effect overflow-hidden" v-if="!loading || users.length > 0 ">
     <div class="px-6 py-4 border-b border-background-light">
+      <div class="flex items-center">
       <h3 class="font-semibold text-text-primary">All Users</h3>
+      <svg v-if="loading" class="ml-2 animate-spin h-4 w-4 text-primary-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      </div>
     </div>
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-background-light">
@@ -27,7 +33,7 @@
             </th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-background-light">
+        <tbody class="divide-y divide-background-light" >
           <tr v-for="user in users" :key="user.id" class="hover:bg-background-element transition-colors">
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="flex items-center">
@@ -83,6 +89,11 @@
       </div>
     </div>
   </div>
+  <div v-else class="loading flex items-center justify-center pt-6">        <svg class="animate-spin h-8 w-8 text-primary-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
 </template>
 
 <script setup>
@@ -92,7 +103,12 @@ defineProps({
   users: {
     type: Array,
     required: true
-  }
+  },
+  loading:{
+    type: Boolean,
+    required: true,
+    },
+
 });
 
 defineEmits(['edit-user', 'delete-user']);
