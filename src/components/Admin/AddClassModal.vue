@@ -307,7 +307,7 @@ const submitForm = async () => {
       formDataToSend.append('cover_image', selectedFile.value);
     }
 
-    const response = await api.post('/admin/classes', formDataToSend, {
+    const response = await api.post('/admin/classroom', formDataToSend, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
