@@ -61,6 +61,13 @@
       @delete-user="deleteUser" 
     />
 
+    <!-- Add EditUserModal -->
+    <EditUserModal
+      v-if="editingUser"
+      :user="editingUser"
+      @close="editingUser = null"
+    />
+
     <!-- Pagination -->
     <div class="flex justify-between items-center mt-4">
       <button 
@@ -89,6 +96,7 @@ import { ref, computed, watch } from 'vue';
 import { useUsersStore } from '@/stores/usersStore';
 import { useAppStore } from '@/stores/app';
 import UserTable from './UserTable.vue';
+import EditUserModal from './EditUserModal.vue'; // Import the EditUserModal
 
 defineEmits(['add-user']);
 
@@ -109,6 +117,15 @@ const selectedRole = filters.role
 const selectedCampus = filters.campus;
 const selectedLevel = filters.level;
 
+const editingUser = ref(null);
+
+const editUser = (userId) => {
+  // Find the user by ID
+  const userToEdit = users.value.find(user => user.id === userId);
+  if (userToEdit) {
+    editingUser.value = userToEdit;    
+  }
+};
 
 let debounceTimeout;
 const debouncedSearch = () => {
@@ -124,11 +141,6 @@ const setFilter = (key, value) => {
 
 const setPage = (page) => {
   usersStore.setPage(page);
-};
-
-const editUser = (userId) => {
-  console.log('Edit user with ID:', userId);
-
 };
 
 const deleteUser = (userId) => {
