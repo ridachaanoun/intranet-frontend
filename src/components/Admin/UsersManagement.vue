@@ -30,6 +30,16 @@
             {{ campus.label }}
           </option>
         </select>
+        <select 
+          v-model="selectedLevel"
+          @change="setFilter('level', selectedLevel)"
+          class="bg-background-element border border-background-light rounded-lg px-4 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400"
+        >
+          <option value="">All Levels</option>
+          <option v-for="level in levels" :key="level.value" :value="level.value">
+            {{ level.label }}
+          </option>
+        </select>
       </div>
       <div class="relative">
         <input 
@@ -93,8 +103,11 @@ const pagination = computed(() => usersStore.pagination);
 const filters = usersStore.filters
 const roles = appStore.roles;
 const campuses = appStore.campuses;
+const levels = appStore.grades;
+
 const selectedRole = filters.role
 const selectedCampus = filters.campus;
+const selectedLevel = filters.level;
 
 
 let debounceTimeout;
