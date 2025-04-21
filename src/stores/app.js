@@ -24,6 +24,12 @@ export const useAppStore = defineStore('app', () => {
     {value: 'student', label: 'Student'},
     {value: 'teacher', label: 'Teacher'}
   ]
+
+  const grades = [
+    { value: 'SAS', label: 'SAS' },
+    { value: 'A1', label: '1ère Année' },
+    { value: 'A2', label: '2ème Année' },
+  ];
   // Actions
   function toggleSidebar() {
     sidebarOpen.value = !sidebarOpen.value
@@ -64,5 +70,6 @@ export const useAppStore = defineStore('app', () => {
     levels,
     campuses,
     roles,
+    grades,
   }
 })
