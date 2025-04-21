@@ -20,6 +20,16 @@
             {{ role.label }}
           </option>
         </select>
+        <select 
+          v-model="selectedCampus"
+          @change="setFilter('campus', selectedCampus)"
+          class="bg-background-element border border-background-light rounded-lg px-4 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400"
+        >
+          <option value="">All Campuses</option>
+          <option v-for="campus in campuses" :key="campus" :value="campus.value">
+            {{ campus.label }}
+          </option>
+        </select>
       </div>
       <div class="relative">
         <input 
@@ -76,11 +86,16 @@ const usersStore = useUsersStore();
 const appStore = useAppStore();
 
 const searchQuery = ref('');
-const selectedRole = ref('');
+
 const users = computed(() => usersStore.users);
 const loading = computed(() => usersStore.loading);
 const pagination = computed(() => usersStore.pagination);
+const filters = usersStore.filters
 const roles = appStore.roles;
+const campuses = appStore.campuses;
+const selectedRole = filters.role
+const selectedCampus = filters.campus;
+
 
 let debounceTimeout;
 const debouncedSearch = () => {
