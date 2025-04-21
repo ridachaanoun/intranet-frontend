@@ -37,7 +37,12 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-background-light">
-          <tr v-for="user in users" :key="user.id" class="hover:bg-background-element transition-colors">
+          <tr 
+            v-for="user in users" 
+            :key="user.id" 
+            class="hover:bg-background-element transition-colors cursor-pointer"
+            @click="navigateToProfile(user.id)"
+          >
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="flex items-center">
                 <div class="h-10 w-10 rounded-full overflow-hidden mr-3">
@@ -68,7 +73,7 @@
             <td class="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
               {{ user.level || (user.role === 'student' ? 'std' : 's') }}
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm" @click.stop>
               <button 
                 @click="$emit('edit-user', user.id)" 
                 class="text-accent-400 hover:text-accent-300 mr-3"
@@ -105,6 +110,10 @@
 
 <script setup>
 import { defineProps, defineEmits } from 'vue';
+import { useRouter } from 'vue-router';
+
+// Get router instance
+const router = useRouter();
 
 defineProps({
   users: {
@@ -133,4 +142,16 @@ const getRoleBadgeClass = (role) => {
 const formatRole = (role) => {
   return role.charAt(0).toUpperCase() + role.slice(1);
 };
+
+// Navigate to user profile
+const navigateToProfile = (userId) => {
+  router.push({ name: 'user-profile', params: { id: userId } });
+};
 </script>
+
+<style scoped>
+/* Optional: Add a subtle effect to indicate the row is clickable */
+tr.cursor-pointer:hover {
+  box-shadow: 0 0 0 1px rgba(var(--color-accent-400), 0.3);
+}
+</style>
