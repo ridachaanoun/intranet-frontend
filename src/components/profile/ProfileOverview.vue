@@ -208,7 +208,7 @@ const userData = computed(() => ({
   level: userStore.user?.level || 'N/A',
   classroom: userStore.user?.classroom || 'N/A',
   referentCoach: userStore.user?.referent_coach || 'N/A',
-  registrationDate: userStore.user?.account_info?.registration_date || 'N/A',
+  registrationDate: userStore.user?.created_at || 'N/A',
   campus: userStore.user?.account_info?.campus || 'N/A',
   promotion: userStore.user?.account_info?.promotion?.year || 'N/A',
   links: userStore.user?.profiles || {}

@@ -106,7 +106,7 @@
         </div>
         <div class="info-item">
           <div class="info-label">Registration Date</div>
-          <div class="info-value">{{ formatDate(user.account_info?.registration_date) }}</div>
+          <div class="info-value">{{ formatDate(user.created_at) }}</div>
         </div>
         <div class="info-item">
           <div class="info-label">Campus</div>
