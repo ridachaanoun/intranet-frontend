@@ -24,10 +24,14 @@
           <!-- Name -->
           <div>
             <label class="block text-sm font-medium text-text-secondary mb-1">Name</label>
+            <div v-if="errors.name" class="text-red-500 text-xs mb-1">
+              {{ errors.name[0] }}
+            </div>
             <input 
               v-model="formData.name"
               type="text" 
-              class="w-full bg-background-element border border-background-light rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400"
+              class="w-full bg-background-element border rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400"
+              :class="errors.name ? 'border-red-500' : 'border-background-light'"
               required
             >
           </div>
@@ -35,10 +39,14 @@
           <!-- Email -->
           <div>
             <label class="block text-sm font-medium text-text-secondary mb-1">Email</label>
+            <div v-if="errors.email" class="text-red-500 text-xs mb-1">
+              {{ errors.email[0] }}
+            </div>
             <input 
               v-model="formData.email"
               type="email" 
-              class="w-full bg-background-element border border-background-light rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400"
+              class="w-full bg-background-element border rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400"
+              :class="errors.email ? 'border-red-500' : 'border-background-light'"
               required
             >
           </div>
@@ -46,9 +54,13 @@
           <!-- Role -->
           <div>
             <label class="block text-sm font-medium text-text-secondary mb-1">Role</label>
+            <div v-if="errors.role" class="text-red-500 text-xs mb-1">
+              {{ errors.role[0] }}
+            </div>
             <select 
               v-model="formData.role"
-              class="w-full bg-background-element border border-background-light rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400"
+              class="w-full bg-background-element border rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400"
+              :class="errors.role ? 'border-red-500' : 'border-background-light'"
               required
             >
               <option value="">Select a role</option>
@@ -65,9 +77,13 @@
           <!-- Campus -->
           <div>
             <label class="block text-sm font-medium text-text-secondary mb-1">Campus</label>
+            <div v-if="errors.campus" class="text-red-500 text-xs mb-1">
+              {{ errors.campus[0] }}
+            </div>
             <select 
               v-model="formData.campus"
-              class="w-full bg-background-element border border-background-light rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400"
+              class="w-full bg-background-element border rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400"
+              :class="errors.campus ? 'border-red-500' : 'border-background-light'"
               required
             >
               <option value="">Select a campus</option>
@@ -84,10 +100,14 @@
           <!-- Password -->
           <div>
             <label class="block text-sm font-medium text-text-secondary mb-1">Password</label>
+            <div v-if="errors.password" class="text-red-500 text-xs mb-1">
+              {{ errors.password[0] }}
+            </div>
             <input 
               v-model="formData.password"
               type="password" 
-              class="w-full bg-background-element border border-background-light rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400"
+              class="w-full bg-background-element border rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400"
+              :class="errors.password ? 'border-red-500' : 'border-background-light'"
               required
             >
           </div>
@@ -95,15 +115,16 @@
           <!-- Confirm Password -->
           <div>
             <label class="block text-sm font-medium text-text-secondary mb-1">Confirm Password</label>
+            <div v-if="passwordError" class="text-red-500 text-xs mb-1">
+              {{ passwordError }}
+            </div>
             <input 
               v-model="formData.confirmPassword"
               type="password" 
-              class="w-full bg-background-element border border-background-light rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400"
+              class="w-full bg-background-element border rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400"
+              :class="passwordError ? 'border-red-500' : 'border-background-light'"
               required
             >
-            <div v-if="passwordError" class="mt-1 text-red-500 text-xs">
-              {{ passwordError }}
-            </div>
           </div>
         </div>
 
@@ -152,22 +173,28 @@ const formData = ref({
   password: '',
   confirmPassword: ''
 });
+
+// Error tracking
+const errors = ref({});
 const passwordError = ref('');
-const loading = ref(false); 
+const loading = ref(false);
 
 const submitForm = async () => {
+  // Reset errors
+  errors.value = {};
+  passwordError.value = '';
+  
   // Validate passwords match
   if (formData.value.password !== formData.value.confirmPassword) {
     passwordError.value = 'Passwords do not match';
     return;
   }
 
-  passwordError.value = '';
   loading.value = true; 
 
   try {
     // API call to register the user
-    const response = await api.post('http://localhost:8000/api/register', {
+    const response = await api.post('/register', {
       name: formData.value.name,
       email: formData.value.email,
       password: formData.value.password,
@@ -189,14 +216,19 @@ const submitForm = async () => {
   } catch (error) {
     console.error('Error adding user:', error.response?.data || error.message);
 
-    // Show error message using SweetAlert2
-    await Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Failed to add user. Please try again.',
-      confirmButtonColor: '#d33',
-      confirmButtonText: 'OK'
-    });
+    // Check for validation errors in the response
+    if (error.response?.data?.errors) {
+      errors.value = error.response.data.errors;
+    } else {
+      // If it's not a validation error, show a general error message
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to add user. Please try again.',
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'OK'
+      });
+    }
   } finally {
     loading.value = false; 
   }
