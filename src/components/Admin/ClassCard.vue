@@ -1,7 +1,7 @@
 <template>
     <div 
       class="bg-surface rounded-xl shadow-card glass-effect overflow-hidden card-hover cursor-pointer"
-      @click="navigateToClassroom"
+      @click="navigateToClassroom(classData.id)"
     >
       <!-- Class Header -->
       <div 
@@ -131,8 +131,8 @@
 
   const router = useRouter();
 
-  function navigateToClassroom() {
-    router.push(`/classroom/${classData.id}`);
+  function navigateToClassroom(classid) {
+    router.push(`/classroom/${classid}`);
   }
 
   function goToProfile(userId) {
