@@ -42,9 +42,25 @@
           <i class="fas fa-search absolute left-3 top-3 text-text-muted"></i>
         </div>
       </div>
+      <div class="px-6 py-4 border-b border-background-light">
+      <div class="flex items-center">
+        <h3 class="font-semibold text-text-primary">All classrooms</h3>
+        <svg v-if="classroomsStore.loading" class="ml-2 animate-spin h-4 w-4 text-primary-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+    </div>
+      <!-- Loading Indicator -->
+      <div v-if="classroomsStore.loading && !classroomsStore" class="flex items-center justify-center py-12">
+        <svg class="animate-spin h-8 w-8 text-primary-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
 
       <!-- Classes Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <ClassCard 
           v-for="classItem in classroomsStore.classrooms" 
           :key="classItem.id" 
@@ -55,7 +71,7 @@
       </div>
       
       <!-- Empty state -->
-      <div v-if="classroomsStore.classrooms.length === 0 && !classroomsStore.loading" class="flex items-center justify-center py-12 bg-surface rounded-xl shadow-card glass-effect">
+      <div v-if="!classroomsStore.loading && classroomsStore.classrooms.length === 0" class="flex items-center justify-center py-12 bg-surface rounded-xl shadow-card glass-effect">
         <div class="text-center text-text-secondary">
           <i class="fas fa-chalkboard-teacher text-3xl mb-2"></i>
           <p>No classes found</p>
@@ -63,7 +79,7 @@
       </div>
       
       <!-- Pagination -->
-      <div class="mt-6 flex justify-center">
+      <div v-if="!classroomsStore.loading && classroomsStore.classrooms.length > 0" class="mt-6 flex justify-center">
         <div class="flex space-x-1">
           <button 
             @click="setPage(classroomsStore.pagination.current_page - 1)" 
@@ -123,7 +139,7 @@ const debouncedUpdateFilter = (key, value) => {
   clearTimeout(debounceTimeout);
   debounceTimeout = setTimeout(() => {
     classroomsStore.setFilter(key, value);
-  }, 2000);
+  }, 500);
 };
 
 // Pagination
