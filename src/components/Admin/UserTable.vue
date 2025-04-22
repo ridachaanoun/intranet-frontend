@@ -45,8 +45,27 @@
           >
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="flex items-center">
-                <div class="h-10 w-10 rounded-full overflow-hidden mr-3">
-                  <img :src="user.image_url || defaultAvatar" :alt="`${user.name} avatar`">
+                <div class="h-10 w-10 rounded-full overflow-hidden mr-3 relative group">
+                  <img 
+                    :src="user.image_url || defaultAvatar" 
+                    :alt="`${user.name} avatar`" 
+                    class="h-full w-full object-cover"
+                    @click.stop
+                  >
+                  <label 
+                    class="absolute inset-0 bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity"
+                    title="Change Image"
+                    @click.stop
+                  >
+                    <i class="fas fa-camera"></i>
+                    <input 
+                      type="file" 
+                      class="hidden" 
+                      accept="image/*" 
+                      @change="(e) => changeUserImage(user, e.target.files[0])"
+                      @click.stop
+                    >
+                  </label>
                 </div>
                 <div>
                   <div class="text-sm font-medium text-text-primary">{{ user.name }}</div>
@@ -234,6 +253,48 @@ const changeUserRole = async (user, newRole) => {
     });
   } finally {
     isChangingRole.value = null;
+  }
+};
+
+const changeUserImage = async (user, file) => {
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('image', file);
+
+  try {
+    const response = await api.post(`/admin/user/${user.id}/upload-image`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    // Update the user's image_url locally after a successful API call
+    const userToUpdate = props.users.find((u) => u.id === user.id);
+    if (userToUpdate) {
+      userToUpdate.image_url = response.data.image_url;
+    }
+
+    await Swal.fire({
+      icon: 'success',
+      title: 'Image Updated',
+      text: 'User image has been updated successfully.',
+      confirmButtonColor: '#3085d6',
+    });
+  } catch (error) {
+    console.error('Error uploading user image:', error);
+
+    let errorMessage = 'Failed to upload user image. Please try again.';
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    }
+
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: errorMessage,
+      confirmButtonColor: '#d33',
+    });
   }
 };
 

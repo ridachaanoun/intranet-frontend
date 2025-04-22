@@ -167,7 +167,6 @@ const handleUpdateUser = (user, event) => {
 };
 
 const handleRoleChanged = ({ user, newRole }) => {
-  // const user = usersStore.users.find((u) => u.id === userId);
   if (user) {
     recentActivities.value.unshift({
       id: Date.now(),
