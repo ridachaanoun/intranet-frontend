@@ -77,6 +77,7 @@
               <button 
                 @click="$emit('edit-user', user.id)" 
                 class="text-accent-400 hover:text-accent-300 mr-3"
+                v-if="user.role === 'student'"
               >
                 <i class="fas fa-edit"></i>
               </button>
