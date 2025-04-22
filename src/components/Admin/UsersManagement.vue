@@ -54,11 +54,12 @@
     </div>
 
     <!-- Users Table -->
-    <UserTable 
-      :users="users" 
-      :loading="loading" 
+    <UserTable
+      :users="usersStore.users"
+      :loading="usersStore.loading"
       @edit-user="editUser"
       @user-deleted="handleUserDeleted"
+      @role-changed="(payload) => $emit('role-changed', payload)"
     />
 
     <!-- Add EditUserModal -->

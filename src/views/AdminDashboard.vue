@@ -50,6 +50,7 @@
           class="fade-in" 
           @add-user="showAddUserModal = true" 
           @handleUpdateUser="handleUpdateUser"
+          @role-changed="handleRoleChanged"
         />
         <ClassesManagement 
           v-if="activeSection === 'classes'" 
@@ -163,6 +164,21 @@ const handleUpdateUser = (user, event) => {
     message: `Student <span class="font-medium">${user?.name}</span> ${event}`,
   });
   saveActivities();
+};
+
+const handleRoleChanged = ({ user, newRole }) => {
+  // const user = usersStore.users.find((u) => u.id === userId);
+  if (user) {
+    recentActivities.value.unshift({
+      id: Date.now(),
+      type: 'role-change',
+      icon: 'fas fa-user-tag',
+      iconBg: 'bg-primary-500/20',
+      iconColor: 'text-primary-400',
+      message: `User <span class="font-medium">${user.name}</span> role changed to <span class="font-medium">${newRole}</span>`,
+    });
+    saveActivities();
+  }
 };
 
 const saveActivities = () => {

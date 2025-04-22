@@ -216,7 +216,7 @@ const changeUserRole = async (user, newRole) => {
     });
     
     // Emit event to parent to refresh the user list
-    emit('role-changed', { userId: user.id, newRole });
+    emit('role-changed', { user: user, newRole });
     
   } catch (error) {
     console.error('Error changing user role:', error);
