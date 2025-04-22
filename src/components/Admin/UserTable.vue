@@ -74,6 +74,34 @@
               {{ user.level || (user.role === 'student' ? 'std' : 's') }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm" @click.stop>
+              <!-- Role change dropdown -->
+              <div class="inline-block mr-3 relative">
+                <button
+                  @click="openRoleDropdown(user)"
+                  class="text-primary-400 hover:text-primary-300 mr-1"
+                  :disabled="isChangingRole === user.id"
+                >
+                  <i class="fas fa-user-tag" v-if="isChangingRole !== user.id"></i>
+                  <i class="fas fa-circle-notch fa-spin" v-else></i>
+                </button>
+                <div v-if="activeRoleDropdown === user.id" 
+                     class="absolute right-0 mt-2 w-48 bg-surface rounded-lg shadow-lg overflow-hidden z-10">
+                  <div class="py-1">
+                    <div class="px-4 py-2 text-xs font-medium text-text-secondary left-0 text-left">Change role to:</div>
+                    <button v-for="role in appStore.roles" :key="role.value"
+                      @click="changeUserRole(user, role.value)"
+                      class="block w-full text-left px-4 py-2 text-sm hover:bg-background-element transition-colors"
+                      :class="user.role === role.value ? 'text-accent-400' : 'text-text-primary'"
+                      :disabled="user.role === role.value || isChangingRole"
+                    >
+                      {{ role.label }}
+                      <i class="fas fa-check ml-2" v-if="user.role === role.value"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Edit button (only for students) -->
               <button 
                 @click="$emit('edit-user', user.id)" 
                 class="text-accent-400 hover:text-accent-300 mr-3"
@@ -81,6 +109,8 @@
               >
                 <i class="fas fa-edit"></i>
               </button>
+              
+              <!-- Delete button -->
               <button 
                 @click="confirmDeleteUser(user)"
                 class="text-secondary-400 hover:text-secondary-300"
@@ -110,18 +140,22 @@
       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
     </svg>
   </div>
+  {{ console.log(appStore.roles)
+   }}
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref } from 'vue';
+import { defineProps, defineEmits, ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAppStore } from '@/stores/app';
 import Swal from 'sweetalert2';
 import api from '@/axios';
 
 // Get router instance
 const router = useRouter();
+const appStore = useAppStore();
 
-defineProps({
+const props = defineProps({
   users: {
     type: Array,
     required: true
@@ -132,10 +166,76 @@ defineProps({
   }
 });
 
-const emit =  defineEmits(['edit-user', 'user-deleted']);
+const emit = defineEmits(['edit-user', 'user-deleted', 'role-changed']);
 
 import defaultAvatar from '@/assets/user.png';
 const isDeleting = ref(null); // Track which user is being deleted
+const isChangingRole = ref(null); 
+const activeRoleDropdown = ref(null); 
+
+const closeDropdowns = () => {
+  activeRoleDropdown.value = null;
+};
+
+onMounted(() => {
+  document.addEventListener('click', closeDropdowns);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', closeDropdowns);
+});
+
+const openRoleDropdown = (user) => {
+
+  activeRoleDropdown.value = activeRoleDropdown.value === user.id ? null : user.id;
+};
+
+// Change user role
+const changeUserRole = async (user, newRole) => {
+  // Don't do anything if role is the same
+  if (user.role === newRole) return;
+  
+  isChangingRole.value = user.id;
+  activeRoleDropdown.value = null;
+  
+  try {
+    await api.put(`/admin/user/${user.id}/role`, { role: newRole });
+    
+    // Update the user's role locally after successful API call
+    const userToUpdate = props.users.find((u) => u.id === user.id);
+    if (userToUpdate) {
+      userToUpdate.role = newRole;
+    }
+    
+    // Show success message
+    await Swal.fire({
+      icon: 'success',
+      title: 'Role Updated',
+      text: `User role has been changed to ${formatRole(newRole)}.`,
+      confirmButtonColor: '#3085d6'
+    });
+    
+    // Emit event to parent to refresh the user list
+    emit('role-changed', { userId: user.id, newRole });
+    
+  } catch (error) {
+    console.error('Error changing user role:', error);
+    
+    let errorMessage = 'Failed to update user role. Please try again.';
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    }
+    
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: errorMessage,
+      confirmButtonColor: '#d33'
+    });
+  } finally {
+    isChangingRole.value = null;
+  }
+};
 
 const getRoleBadgeClass = (role) => {
   switch (role) {
@@ -214,5 +314,13 @@ const deleteUser = async (userId) => {
 /* Optional: Add a subtle effect to indicate the row is clickable */
 tr.cursor-pointer:hover {
   box-shadow: 0 0 0 1px rgba(var(--color-accent-400), 0.3);
+}
+
+/* Add new styles for role dropdown */
+.role-dropdown {
+  position: absolute;
+  right: 0;
+  z-index: 10;
+  transition: all 0.2s ease;
 }
 </style>
