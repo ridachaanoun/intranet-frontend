@@ -56,9 +56,9 @@
     <!-- Users Table -->
     <UserTable 
       :users="users" 
-      :loading="loading"
-      @edit-user="editUser" 
-      @delete-user="deleteUser" 
+      :loading="loading" 
+      @edit-user="editUser"
+      @user-deleted="handleUserDeleted"
     />
 
     <!-- Add EditUserModal -->
@@ -143,9 +143,13 @@ const setPage = (page) => {
   usersStore.setPage(page);
 };
 
-const deleteUser = (userId) => {
-  console.log('Delete user with ID:', userId);
 
+const handleUserDeleted = (deletedUserId) => {
+  // Remove the deleted user from the users array without refreshing
+  const idx = usersStore.users.findIndex(user => user.id === deletedUserId);
+  if (idx !== -1) {
+    usersStore.users.splice(idx, 1);
+  }
 };
 
 usersStore.fetchUsers();

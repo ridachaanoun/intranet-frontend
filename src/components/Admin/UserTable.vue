@@ -82,10 +82,13 @@
                 <i class="fas fa-edit"></i>
               </button>
               <button 
-                @click="$emit('delete-user', user.id)" 
+                @click="confirmDeleteUser(user)"
                 class="text-secondary-400 hover:text-secondary-300"
+                :class="{'opacity-50 cursor-not-allowed': isDeleting === user.id}"
+                :disabled="isDeleting === user.id"
               >
-                <i class="fas fa-trash-alt"></i>
+                <i class="fas fa-trash-alt" v-if="isDeleting !== user.id"></i>
+                <i class="fas fa-circle-notch fa-spin" v-else></i>
               </button>
             </td>
           </tr>
@@ -110,8 +113,10 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
+import { defineProps, defineEmits, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
+import api from '@/axios';
 
 // Get router instance
 const router = useRouter();
@@ -127,9 +132,10 @@ defineProps({
   }
 });
 
-defineEmits(['edit-user', 'delete-user']);
+const emit =  defineEmits(['edit-user', 'user-deleted']);
 
 const defaultAvatar = 'https://via.placeholder.com/150';
+const isDeleting = ref(null); // Track which user is being deleted
 
 const getRoleBadgeClass = (role) => {
   switch (role) {
@@ -147,6 +153,60 @@ const formatRole = (role) => {
 // Navigate to user profile
 const navigateToProfile = (userId) => {
   router.push({ name: 'user-profile', params: { id: userId } });
+};
+
+// Confirm and handle user deletion
+const confirmDeleteUser = async (user) => {
+  const result = await Swal.fire({
+    title: 'Delete User',
+    html: `Are you sure you want to delete <strong>${user.name}</strong>?<br>This action cannot be undone.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete user',
+    cancelButtonText: 'Cancel'
+  });
+
+  if (result.isConfirmed) {
+    await deleteUser(user.id);
+  }
+};
+
+const deleteUser = async (userId) => {
+  isDeleting.value = userId;
+  
+  try {
+    await api.delete(`/admin/users/${userId}`);
+    
+    // Show success message
+    await Swal.fire({
+      icon: 'success',
+      title: 'User Deleted',
+      text: 'The user has been successfully deleted.',
+      confirmButtonColor: '#3085d6'
+    });
+    
+    // Emit event to parent to refresh the user list
+    emit('user-deleted', userId);
+    
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    
+    let errorMessage = 'Failed to delete user. Please try again.';
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    }
+    
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: errorMessage,
+      confirmButtonColor: '#d33'
+    });
+  } finally {
+    isDeleting.value = null;
+  }
 };
 </script>
 
