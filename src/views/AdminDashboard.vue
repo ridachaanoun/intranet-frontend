@@ -88,8 +88,10 @@ import AddUserModal from '@/components/admin/AddUserModal.vue';
 import AddClassModal from '@/components/admin/AddClassModal.vue';
 import { useAppStore } from '@/stores/app';
 import { useUserStore } from '@/stores/userStore';
+import { useUsersStore } from '@/stores/usersStore';
 
 const appStore = useAppStore();
+const usersStore = useUsersStore();
 const userStore = useUserStore(); 
 
 const recentActivities = ref([])
@@ -121,7 +123,7 @@ const sectionTitle = computed(() => {
 
 const handleAddUser = (payload) => {
   const user = payload?.user || payload;
-  console.log('User added:', user);
+  usersStore.users.unshift(user)
   showAddUserModal.value = false;
 
   recentActivities.value.unshift({

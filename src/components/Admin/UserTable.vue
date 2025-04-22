@@ -134,7 +134,7 @@ defineProps({
 
 const emit =  defineEmits(['edit-user', 'user-deleted']);
 
-const defaultAvatar = 'https://via.placeholder.com/150';
+import defaultAvatar from '@/assets/user.png';
 const isDeleting = ref(null); // Track which user is being deleted
 
 const getRoleBadgeClass = (role) => {
