@@ -66,6 +66,7 @@
       v-if="editingUser"
       :user="editingUser"
       @close="editingUser = null"
+      @handleUpdateUser="(user, event) => $emit('handleUpdateUser', user, event)"
     />
 
     <!-- Pagination -->
@@ -98,7 +99,7 @@ import { useAppStore } from '@/stores/app';
 import UserTable from './UserTable.vue';
 import EditUserModal from './EditUserModal.vue'; // Import the EditUserModal
 
-defineEmits(['add-user']);
+defineEmits(['add-user','handleUpdateUser']);
 
 const usersStore = useUsersStore();
 const appStore = useAppStore();

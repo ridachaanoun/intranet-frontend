@@ -49,6 +49,7 @@
           v-if="activeSection === 'users'" 
           class="fade-in" 
           @add-user="showAddUserModal = true" 
+          @handleUpdateUser="handleUpdateUser"
         />
         <ClassesManagement 
           v-if="activeSection === 'classes'" 
@@ -133,7 +134,6 @@ const handleAddUser = (payload) => {
     iconBg: 'bg-primary-500/20',
     iconColor: 'text-primary-400',
     message: `New user <span class="font-medium">${user?.name || 'Unknown'}</span> added`,
-    time: 'Just now'
   });
   saveActivities();
 };
@@ -149,7 +149,18 @@ const handleAddClass = (classroom) => {
     iconBg: 'bg-accent-500/20',
     iconColor: 'text-accent-400',
     message: `New class <span class="font-medium">${classroom.name}</span> created`,
-    time: 'Just now'
+  });
+  saveActivities();
+};
+
+const handleUpdateUser = (user, event) => {
+  recentActivities.value.unshift({
+    id: Date.now(),
+    type: 'user-update',
+    icon: 'fas fa-user-edit',
+    iconBg: 'bg-accent-500/20',
+    iconColor: 'text-accent-400',
+    message: `Student <span class="font-medium">${user?.name}</span> ${event}`,
   });
   saveActivities();
 };

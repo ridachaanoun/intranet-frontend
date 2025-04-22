@@ -219,7 +219,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close','handleUpdateUser']);
 
 const appStore = useAppStore();
 const activeTab = ref('personal');
@@ -295,6 +295,7 @@ const submitPersonalInfo = async () => {
       confirmButtonColor: '#3085d6'
     });
     emit('close');
+    emit('handleUpdateUser', props.user, 'personal information was updated');
   } catch (error) {
     console.error('Error updating personal info:', error);
     Swal.fire({
@@ -320,6 +321,7 @@ const submitAccountInfo = async () => {
       confirmButtonColor: '#3085d6'
     });
     emit('close');
+    emit('handleUpdateUser', props.user, 'account information was updated');
   } catch (error) {
     console.error('Error updating account info:', error);
     Swal.fire({
