@@ -175,5 +175,11 @@ const manageStudents = (classId) => {
 // // Handle classroom updated event
 const handleClassroomUpdated = (updatedClassroom) => {
   console.log('Classroom updated:', updatedClassroom);
+  const index = classroomsStore.classrooms.findIndex(c => c.id === updatedClassroom.id);
+  if (index !== -1) {
+    classroomsStore.classrooms[index] = { ...classroomsStore.classrooms[index], ...updatedClassroom };
+  }
+  console.log(classroomsStore.classrooms[index]);
+  
 };
 </script>
