@@ -109,14 +109,24 @@
           </button>
         </div>
       </div>
+
+      <!-- Edit Classroom Modal -->
+      <EditClassroomModal 
+        v-if="editingClassroom" 
+        :visible="true" 
+        :classroom="editingClassroom" 
+        @close="editingClassroom = null" 
+        @updated="handleClassroomUpdated"
+      />
     </div>
   </template>
 
 <script setup>
 import { useClassroomsStore } from '@/stores/classroomsStore';
 import { useAppStore } from '@/stores/app';
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import ClassCard from './ClassCard.vue';
+import EditClassroomModal from './EditClassroomModal.vue';
 
 const classroomsStore = useClassroomsStore();
 const appStore = useAppStore();
@@ -126,6 +136,7 @@ const levels = appStore.levels;
 
 const filters = classroomsStore.filters;
 
+const editingClassroom = ref(null)
 // Fetch classrooms on component mount
 onMounted(() => {
   classroomsStore.fetchClassrooms();
@@ -151,11 +162,18 @@ const setPage = (page) => {
 };
 
 // Methods
-const editClass = (classId) => {
-  console.log('Edit class with ID:', classId);
+const editClass = (classroom) => {
+  console.log('Edit class with ID:', classroom);
+  editingClassroom.value = classroom;
 };
 
 const manageStudents = (classId) => {
   console.log('Manage students for class ID:', classId);
+};
+
+
+// // Handle classroom updated event
+const handleClassroomUpdated = (updatedClassroom) => {
+  console.log('Classroom updated:', updatedClassroom);
 };
 </script>
