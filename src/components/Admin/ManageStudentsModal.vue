@@ -12,14 +12,30 @@
         </button>
       </div>
 
-      <!-- Search Input -->
-      <div class="mb-4">
+      <!-- Filter Toggle -->
+      <div class="mb-4 flex justify-between items-center">
+        <div>
+          <button
+            @click="filter = 'inClassroom'"
+            :class="filter === 'inClassroom' ? 'bg-accent-600 text-white' : 'bg-background-element text-text-primary'"
+            class="px-4 py-2 rounded-lg transition-colors"
+          >
+            In Classroom
+          </button>
+          <button
+            @click="filter = 'notInClassroom'"
+            :class="filter === 'notInClassroom' ? 'bg-accent-600 text-white' : 'bg-background-element text-text-primary'"
+            class="px-4 py-2 rounded-lg transition-colors ml-2"
+          >
+            Not In Classroom
+          </button>
+        </div>
         <input
           v-model="searchQuery"
           @input="debouncedSearch"
           type="text"
           placeholder="Search students..."
-          class="w-full border border-background-light rounded-lg px-4 py-2 text-text-primary focus:ring-accent-400 bg-background-element"
+          class="w-1/2 border border-background-light rounded-lg px-4 py-2 text-text-primary focus:ring-accent-400 bg-background-element"
         />
       </div>
 
@@ -27,7 +43,7 @@
       <div class="overflow-y-auto border border-background-light rounded-lg" style="max-height: 400px;" @scroll="handleScroll">
         <ul>
           <li
-            v-for="student in students"
+            v-for="student in filteredStudents"
             :key="student.id"
             class="flex justify-between items-center py-2 px-4 border-b border-background-light"
           >
@@ -65,7 +81,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import api from '@/axios';
 import Swal from 'sweetalert2';
 
@@ -83,15 +99,14 @@ const page = ref(1);
 const isLoading = ref(false);
 const hasMore = ref(true);
 const debounceTimeout = ref(null);
+const filter = ref('inClassroom'); // Filter toggle state
 
-// Initialize selected students from the classroom
 const initializeSelectedStudents = () => {
   if (props.classroom && props.classroom.students) {
     selectedStudents.value = new Set(props.classroom.students.map((student) => student.id));
   }
 };
 
-// Fetch students from the API
 const fetchStudents = async () => {
   if (isLoading.value || !hasMore.value) return;
 
@@ -129,7 +144,6 @@ const debouncedSearch = () => {
   }, 2000);
 };
 
-// Handle infinite scrolling
 const handleScroll = (event) => {
   const { scrollTop, scrollHeight, clientHeight } = event.target;
   if (scrollTop + clientHeight >= scrollHeight - 10) {
@@ -137,7 +151,6 @@ const handleScroll = (event) => {
   }
 };
 
-// Toggle student selection
 const toggleStudentSelection = (student) => {
   if (selectedStudents.value.has(student.id)) {
     selectedStudents.value.delete(student.id);
@@ -146,8 +159,16 @@ const toggleStudentSelection = (student) => {
   }
 };
 
-// Check if a student is selected
 const isSelected = (student) => selectedStudents.value.has(student.id);
+
+// Filter students based on the toggle
+const filteredStudents = computed(() => {
+  if (filter.value === 'inClassroom') {
+    return students.value.filter((student) => selectedStudents.value.has(student.id));
+  } else {
+    return students.value.filter((student) => !selectedStudents.value.has(student.id));
+  }
+});
 
 const saveChanges = async () => {
   try {
