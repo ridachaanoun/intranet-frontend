@@ -146,7 +146,7 @@ const debouncedSearch = () => {
 
 const handleScroll = (event) => {
   const { scrollTop, scrollHeight, clientHeight } = event.target;
-  if (scrollTop + clientHeight >= scrollHeight - 10) {
+  if (scrollTop + clientHeight >= scrollHeight - 10 && filter.value === 'notInClassroom') {
     fetchStudents();
   }
 };
