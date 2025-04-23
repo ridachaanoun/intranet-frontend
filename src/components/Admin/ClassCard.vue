@@ -106,7 +106,7 @@
           <span>Edit</span>
         </button>
         <button 
-          @click.stop="$emit('manage-students', classData.id)" 
+          @click.stop="$emit('manage-students', classData)" 
           class="text-accent-400 hover:text-accent-300 flex items-center text-sm"
         >
           <i class="fas fa-users mr-1"></i>

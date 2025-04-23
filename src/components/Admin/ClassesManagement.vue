@@ -118,6 +118,15 @@
         @close="editingClassroom = null" 
         @updated="handleClassroomUpdated"
       />
+
+      <!-- Manage Students Modal -->
+      <ManageStudentsModal
+        v-if="managingClassroom"
+        :visible="true"
+        :classroom="managingClassroom"
+        @close="managingClassroom = null"
+        @updated="handleClassroomUpdated"
+      />
     </div>
   </template>
 
@@ -127,6 +136,7 @@ import { useAppStore } from '@/stores/app';
 import { onMounted, ref } from 'vue';
 import ClassCard from './ClassCard.vue';
 import EditClassroomModal from './EditClassroomModal.vue';
+import ManageStudentsModal from './ManageStudentsModal.vue';
 
 const classroomsStore = useClassroomsStore();
 const appStore = useAppStore();
@@ -136,7 +146,9 @@ const levels = appStore.levels;
 
 const filters = classroomsStore.filters;
 
-const editingClassroom = ref(null)
+const editingClassroom = ref(null);
+const managingClassroom = ref(null);
+
 // Fetch classrooms on component mount
 onMounted(() => {
   classroomsStore.fetchClassrooms();
@@ -167,12 +179,12 @@ const editClass = (classroom) => {
   editingClassroom.value = classroom;
 };
 
-const manageStudents = (classId) => {
-  console.log('Manage students for class ID:', classId);
+const manageStudents = (classroom) => {
+  console.log('Manage students for classroom:', classroom);
+  managingClassroom.value = classroom;
 };
 
-
-// // Handle classroom updated event
+// Handle classroom updated event
 const handleClassroomUpdated = (updatedClassroom) => {
   console.log('Classroom updated:', updatedClassroom);
   const index = classroomsStore.classrooms.findIndex(c => c.id === updatedClassroom.id);
@@ -180,6 +192,5 @@ const handleClassroomUpdated = (updatedClassroom) => {
     classroomsStore.classrooms[index] = { ...classroomsStore.classrooms[index], ...updatedClassroom };
   }
   console.log(classroomsStore.classrooms[index]);
-  
 };
 </script>
