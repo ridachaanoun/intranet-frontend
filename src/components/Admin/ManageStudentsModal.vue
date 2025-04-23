@@ -15,15 +15,15 @@
       <!-- Filter Toggle -->
       <div class="mb-4 flex justify-between items-center">
         <div>
-          <button
-            @click="filter = 'inClassroom'"
+        <button
+            @click="setFilter('inClassroom')"
             :class="filter === 'inClassroom' ? 'bg-accent-600 text-white' : 'bg-background-element text-text-primary'"
             class="px-4 py-2 rounded-lg transition-colors"
-          >
+        >
             In Classroom
-          </button>
-          <button
-            @click="filter = 'notInClassroom'"
+        </button>
+        <button
+            @click="setFilter('notInClassroom')"
             :class="filter === 'notInClassroom' ? 'bg-accent-600 text-white' : 'bg-background-element text-text-primary'"
             class="px-4 py-2 rounded-lg transition-colors ml-2"
           >
@@ -52,14 +52,11 @@
               <span>{{ student.name }}</span>
             </div>
             <button
-              @click="toggleStudentSelection(student)"
-              :class="{
-                'bg-accent-600 text-white': isSelected(student),
-                'bg-background-element text-text-primary': !isSelected(student),
-              }"
-              class="px-3 py-1 rounded-lg transition-colors"
+            @click="toggleStudentSelection(student)"
+            :class="isSelected(student) ? 'bg-accent-600 text-white' : 'bg-background-element text-text-primary'"
+            class="px-3 py-1 rounded-lg transition-colors"
             >
-              {{ isSelected(student) ? 'Remove' : 'Add' }}
+            {{ isSelected(student) ? 'Remove' : 'Add' }}
             </button>
           </li>
         </ul>
@@ -72,8 +69,8 @@
         <button @click="closeModal" class="px-4 py-2 rounded-lg border border-background-light text-text-primary">
           Cancel
         </button>
-        <button @click="saveChanges" class="px-4 py-2 rounded-lg bg-accent-600 text-white">
-          Save Changes
+        <button @click="saveChanges" :disabled="isSaving" class="px-4 py-2 rounded-lg bg-accent-600 text-white">
+        Save Changes
         </button>
       </div>
     </div>
@@ -97,106 +94,117 @@ const students = ref([]);
 const selectedStudents = ref(new Set());
 const page = ref(1);
 const isLoading = ref(false);
+const isSaving = ref(false);
 const hasMore = ref(true);
 const debounceTimeout = ref(null);
 const filter = ref('inClassroom'); // Filter toggle state
 
 const initializeSelectedStudents = () => {
-  if (props.classroom && props.classroom.students) {
-    selectedStudents.value = new Set(props.classroom.students.map((student) => student.id));
-  }
+if (props.classroom?.students) {
+    selectedStudents.value = new Set(props.classroom.students.map(s => s.id));
+    students.value = [...props.classroom.students];
+}
 };
 
 const fetchStudents = async () => {
-  if (isLoading.value || !hasMore.value) return;
-
-  isLoading.value = true;
-  try {
-    const response = await api.get('/users/search', {
-      params: {
+if (isLoading.value || !hasMore.value || filter.value === 'inClassroom') return;
+isLoading.value = true;
+try {
+    const res = await api.get('/users/search', {
+    params: {
         query: searchQuery.value,
         role: 'student',
         page: page.value,
-        limit: 15,
-      },
+        per_page: 15,
+    },
     });
-
-    if (response.data.users.length > 0) {
-      students.value.push(...response.data.users);
-      page.value += 1;
+    const fetched = res.data.users;
+    if (fetched.length) {
+    students.value.push(...fetched);
+    page.value++;
     } else {
-      hasMore.value = false;
+    hasMore.value = false;
     }
-  } catch (error) {
-    console.error('Error fetching students:', error);
-  } finally {
+} catch (err) {
+    console.error('Fetch error:', err);
+} finally {
     isLoading.value = false;
-  }
+}
 };
 
 const debouncedSearch = () => {
-  clearTimeout(debounceTimeout.value);
-  debounceTimeout.value = setTimeout(() => {
+clearTimeout(debounceTimeout.value);
+debounceTimeout.value = setTimeout(() => {
     students.value = [];
     page.value = 1;
     hasMore.value = true;
     fetchStudents();
-  }, 2000);
+}, 500);
 };
 
-const handleScroll = (event) => {
-  const { scrollTop, scrollHeight, clientHeight } = event.target;
-  if (scrollTop + clientHeight >= scrollHeight - 10 && filter.value === 'notInClassroom') {
+const handleScroll = (e) => {
+const { scrollTop, scrollHeight, clientHeight } = e.target;
+if (filter.value === 'notInClassroom' && scrollTop + clientHeight >= scrollHeight - 10) {
     fetchStudents();
-  }
+}
 };
 
 const toggleStudentSelection = (student) => {
-  if (selectedStudents.value.has(student.id)) {
-    selectedStudents.value.delete(student.id);
-  } else {
-    selectedStudents.value.add(student.id);
-  }
+selectedStudents.value.has(student.id)
+    ? selectedStudents.value.delete(student.id)
+    : selectedStudents.value.add(student.id);
 };
 
 const isSelected = (student) => selectedStudents.value.has(student.id);
 
-// Filter students based on the toggle
 const filteredStudents = computed(() => {
-  if (filter.value === 'inClassroom') {
-    return students.value.filter((student) => selectedStudents.value.has(student.id));
-  } else {
-    return students.value.filter((student) => !selectedStudents.value.has(student.id));
-  }
+return filter.value === 'inClassroom'
+    ? students.value.filter(s => selectedStudents.value.has(s.id))
+    : students.value.filter(s => !selectedStudents.value.has(s.id));
 });
 
+const setFilter = (val) => {
+filter.value = val;
+if (val === 'notInClassroom') {
+    students.value = [];
+    page.value = 1;
+    hasMore.value = true;
+    fetchStudents();
+} else if (val === 'inClassroom') {
+    students.value = [...props.classroom.students];
+}
+};
+
 const saveChanges = async () => {
+  isSaving.value = true;
   try {
-    const response = await api.post(`/admin/classroom/${props.classroom.id}/students`, {
-      student_ids: Array.from(selectedStudents.value),
-    });
+    const url = `/classrooms/${props.classroom.id}/students`;
 
-    await Swal.fire({
-      icon: 'success',
-      title: 'Success',
-      text: response.data.message,
-      confirmButtonColor: '#3085d6',
-      confirmButtonText: 'OK',
-    });
+    let res;
+    if (filter.value === 'notInClassroom') {
+      // Add students
+      res = await api.post(url, {
+        student_ids: Array.from(selectedStudents.value),
+      });
+      await Swal.fire({ icon: 'success', title: 'Success', text: res.data.message });
+    } else {
+      // Remove students
+      res = await api.delete(url, {
+        data: { student_ids: Array.from(selectedStudents.value) },
+      });
+      await Swal.fire({ icon: 'success', title: 'Success', text: res.data.message });
+    }
 
-    emits('updated', response.data.classroom);
+    emits('updated', res.data.classroom || null);
     closeModal();
-  } catch (error) {
-    console.error('Error saving changes:', error);
-    await Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Failed to update students. Please try again.',
-      confirmButtonColor: '#d33',
-      confirmButtonText: 'OK',
-    });
+  } catch (err) {
+    console.error('Save error:', err);
+    await Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to update students.' });
+  } finally {
+    isSaving.value = false;
   }
 };
+
 
 const closeModal = () => {
   emits('close');
