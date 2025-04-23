@@ -2,7 +2,11 @@
   <div v-if="visible" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
     <div class="bg-surface rounded-xl shadow-lg w-full max-w-3xl p-6 relative">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-xl font-bold text-text-primary">Manage Students</h3>
+        <h2 class="text-2xl font-semibold text-text-primary flex items-center">
+          <i class="fas fa-users-cog mr-2 text-accent-500"></i>
+          Manage Students
+          <span class="ml-2 px-3 py-1 bg-accent-100 text-accent-700 rounded-md text-sm font-bold">{{ classroom.slug }}</span>
+        </h2>
         <button @click="closeModal" class="text-text-secondary hover:text-accent-400 transition-colors">
           <i class="fas fa-times"></i>
         </button>
@@ -15,7 +19,7 @@
           @input="debouncedSearch"
           type="text"
           placeholder="Search students..."
-          class="w-full border border-background-light rounded-lg px-4 py-2 text-text-primary focus:ring-accent-400"
+          class="w-full border border-background-light rounded-lg px-4 py-2 text-text-primary focus:ring-accent-400 bg-background-element"
         />
       </div>
 
@@ -50,7 +54,10 @@
       <!-- Actions -->
       <div class="mt-4 flex justify-end space-x-3">
         <button @click="closeModal" class="px-4 py-2 rounded-lg border border-background-light text-text-primary">
-          Close
+          Cancel
+        </button>
+        <button @click="saveChanges" class="px-4 py-2 rounded-lg bg-accent-600 text-white">
+          Save Changes
         </button>
       </div>
     </div>
@@ -58,15 +65,16 @@
 </template>
 
 <script setup>
-import { ref} from 'vue';
+import { ref } from 'vue';
 import api from '@/axios';
+import Swal from 'sweetalert2';
 
 const props = defineProps({
   visible: Boolean,
   classroom: Object,
 });
 
-const emits = defineEmits(['close']);
+const emits = defineEmits(['close', 'updated']);
 
 const searchQuery = ref('');
 const students = ref([]);
@@ -94,7 +102,7 @@ const fetchStudents = async () => {
         query: searchQuery.value,
         role: 'student',
         page: page.value,
-        limit: 15, 
+        limit: 15,
       },
     });
 
@@ -111,7 +119,6 @@ const fetchStudents = async () => {
   }
 };
 
-// Debounced search
 const debouncedSearch = () => {
   clearTimeout(debounceTimeout.value);
   debounceTimeout.value = setTimeout(() => {
@@ -119,7 +126,7 @@ const debouncedSearch = () => {
     page.value = 1;
     hasMore.value = true;
     fetchStudents();
-  }, 2000); 
+  }, 2000);
 };
 
 // Handle infinite scrolling
@@ -142,6 +149,34 @@ const toggleStudentSelection = (student) => {
 // Check if a student is selected
 const isSelected = (student) => selectedStudents.value.has(student.id);
 
+const saveChanges = async () => {
+  try {
+    const response = await api.post(`/admin/classroom/${props.classroom.id}/students`, {
+      student_ids: Array.from(selectedStudents.value),
+    });
+
+    await Swal.fire({
+      icon: 'success',
+      title: 'Success',
+      text: response.data.message,
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'OK',
+    });
+
+    emits('updated', response.data.classroom);
+    closeModal();
+  } catch (error) {
+    console.error('Error saving changes:', error);
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Failed to update students. Please try again.',
+      confirmButtonColor: '#d33',
+      confirmButtonText: 'OK',
+    });
+  }
+};
+
 const closeModal = () => {
   emits('close');
 };
@@ -149,6 +184,7 @@ const closeModal = () => {
 initializeSelectedStudents();
 fetchStudents();
 </script>
+
 
 
 
