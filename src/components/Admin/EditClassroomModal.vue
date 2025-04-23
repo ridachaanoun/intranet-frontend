@@ -291,10 +291,23 @@ const submitForm = async () => {
     closeModal();
   } catch (error) {
     console.error('Error updating classroom:', error);
+    let message = 'Failed to update classroom. Please try again.';
+    if (error.response && error.response.data) {
+      if (error.response.data.message) {
+        message = error.response.data.message;
+      }
+      // Show first validation error if available
+      if (error.response.data.errors) {
+        const firstField = Object.keys(error.response.data.errors)[0];
+        if (firstField) {
+          message = error.response.data.errors[firstField][0];
+        }
+      }
+    }
     await Swal.fire({
       icon: 'error',
       title: 'Error',
-      text: 'Failed to update classroom. Please try again.',
+      text: message,
       confirmButtonColor: '#d33',
       confirmButtonText: 'OK'
     });
