@@ -1,14 +1,12 @@
 <script setup>
-import { ref } from 'vue'
 
-const links = ref([
-  { icon: "fa-book", label: "Library" },
-  { icon: "fa-graduation-cap", label: "Courses" },
-  { icon: "fa-calendar-alt", label: "Schedule" },
-  { icon: "fa-file-alt", label: "Resources" },
-  { icon: "fa-laptop-code", label: "Code Lab" },
-  { icon: "fa-question-circle", label: "Help Desk" }
-])
+const quickLinks = [
+  { label: 'Home', icon: 'fas fa-home', path: '/' },
+  { label: 'Network', icon: 'fas fa-network-wired', path: '/network' },
+  { label: 'Classrooms', icon: 'fas fa-chalkboard', path: '/classrooms' },
+  { label: 'Marketplace', icon: 'fas fa-store', path: '/marketplace' },
+  { label: 'Profile', icon: 'fas fa-user', path: '/profile' },
+];
 </script>
 
 <template>
@@ -22,7 +20,7 @@ const links = ref([
     <div class="p-4">
       <div class="grid grid-cols-2 gap-3">
         <a 
-          v-for="(link, index) in links"
+          v-for="(link, index) in quickLinks"
           :key="index"
           href="#" 
           class="p-3 bg-surface-hover rounded-lg hover:bg-surface-active transition-colors flex flex-col items-center justify-center text-center"

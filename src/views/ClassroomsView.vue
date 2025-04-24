@@ -290,7 +290,7 @@
           </div>
     
           <!-- Quick Access Card -->
-          <div class="bg-surface rounded-xl p-6 shadow-card hover:shadow-glow transition-all duration-300">
+          <!-- <div class="bg-surface rounded-xl p-6 shadow-card hover:shadow-glow transition-all duration-300">
             <h3 class="text-lg font-semibold mb-4 flex items-center">
               <i class="fas fa-bolt text-primary-400 mr-2"></i>
               <span>Quick Access</span>
@@ -308,7 +308,8 @@
                 <span class="text-text-primary">{{ link.label }}</span>
               </router-link>
             </div>
-          </div>
+          </div> -->
+          <QuickLinks/>
         </div>
       </div>
     <div v-else class="h-[32rem] flex justify-center items-center">
@@ -323,6 +324,7 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import { useAppStore } from '@/stores/app';
 import api from '@/axios';
+import QuickLinks from '../components/home/QuickLinks.vue'
 
 // Access the app store
 const app = useAppStore();
@@ -421,10 +423,11 @@ function goToProfile(userId) {
     { value: 2, label: 'Campuses' },
   ]
     // Quick access links
-    const quickLinks = [
-    { label: 'Class Schedule', icon: 'fas fa-calendar-alt', path: '/schedule' },
-    { label: 'Find a Trainer', icon: 'fas fa-user-tie', path: '/trainers' },
-    { label: 'Resources', icon: 'fas fa-bookmark', path: '/resources' },
-    { label: 'Learning Path', icon: 'fas fa-graduation-cap', path: '/learning-path' },
-  ]
+// const quickLinks = [
+//   { label: 'Home', icon: 'fas fa-home', path: '/' },
+//   { label: 'Network', icon: 'fas fa-network-wired', path: '/network' },
+//   { label: 'Classrooms', icon: 'fas fa-chalkboard', path: '/classrooms' },
+//   { label: 'Marketplace', icon: 'fas fa-store', path: '/marketplace' },
+//   { label: 'Profile', icon: 'fas fa-user', path: '/profile' },
+// ];
 </script>
