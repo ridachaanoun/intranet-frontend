@@ -54,8 +54,8 @@ onUnmounted(() => {
       <router-view />
       <Footer />
     </main>
-  </div>
-
     <!-- Loading overlay that shows when user data is loading -->
     <LoadingOverlay :show="userStore.isLoading" />
+  </div>
+
 </template>
