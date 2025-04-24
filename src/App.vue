@@ -1,12 +1,15 @@
 <script setup>
 import { onMounted, onUnmounted, computed } from 'vue'
 import { useAppStore } from './stores/app'
+import { useUserStore } from './stores/userStore'
 import { useRoute } from 'vue-router'
 import Navbar from './components/layout/Navbar.vue'
 import Sidebar from './components/layout/Sidebar.vue'
 import Footer from './components/layout/Footer.vue'
+import LoadingOverlay from './components/common/LoadingOverlay.vue'
 
 const appStore = useAppStore()
+const userStore = useUserStore()
 const route = useRoute()
 
 // Determine if we're on the login page
@@ -16,9 +19,12 @@ const isLoginPage = computed(() => route.path === '/login')
 onMounted(() => {
   window.addEventListener('resize', appStore.handleResize)
   
+  // Fetch user data when app mounts
+  if (!isLoginPage.value) {
+    userStore.fetchUserData()
+  }
   
   // Uncomment to enable live clock - for now using the fixed time as specified
-  // const interval = setInterval(appStore.updateDateTime, 1000)
   appStore.updateDateTime()
   const interval = setInterval(appStore.updateDateTime, 1000)
   onUnmounted(() => clearInterval(interval))
@@ -32,6 +38,8 @@ onUnmounted(() => {
 <template>
   <!-- For login page, just show the router view without layout components -->
   <router-view v-if="isLoginPage" />
+  
+
   
   <!-- For other pages, show the full layout -->
   <div v-else class="text-text-primary min-h-screen">
@@ -47,4 +55,7 @@ onUnmounted(() => {
       <Footer />
     </main>
   </div>
+
+    <!-- Loading overlay that shows when user data is loading -->
+    <LoadingOverlay :show="userStore.isLoading" />
 </template>
