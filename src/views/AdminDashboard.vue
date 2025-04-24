@@ -43,7 +43,8 @@
           class="fade-in"
           @add-user="showAddUserModal = true"
           @add-class="showAddClassModal = true"
-          :recentActivities="recentActivities"
+          :recent-activities="recentActivities"
+          @announcement-created="handleAnnouncementCreated"
         />
         <UsersManagement 
           v-if="activeSection === 'users'" 
@@ -177,6 +178,19 @@ const handleRoleChanged = ({ user, newRole }) => {
     });
     saveActivities();
   }
+};
+
+const handleAnnouncementCreated = (announcement) => {
+  recentActivities.value.unshift({
+    id: Date.now(),
+    type: 'announcement',
+    icon: 'fas fa-bullhorn',
+    iconBg: 'bg-accent-500/20',
+    iconColor: 'text-accent-400',
+    message: `Titel: <span class="font-medium">${announcement.title}</span> </br>Content: ${announcement.content.slice(0, 25)}${announcement.content.length > 25 ? '...' : ''}`,
+  });
+  saveActivities();
+  
 };
 
 const saveActivities = () => {

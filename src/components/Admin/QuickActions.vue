@@ -19,11 +19,11 @@
           <span>Create Class</span>
         </button>
         <button 
-          @click="$emit('assign-students')"
+          @click="$emit('add-announcements')"
           class="w-full py-3 px-4 bg-secondary-600 hover:bg-secondary-700 text-white rounded-lg flex items-center justify-center transition-colors"
         >
           <i class="fas fa-user-graduate mr-2"></i>
-          <span>Assign Students</span>
+          <span>Add Announcements</span>
         </button>
         <button class="w-full py-3 px-4 bg-background-element hover:bg-surface-hover text-text-primary rounded-lg flex items-center justify-center transition-colors">
           <i class="fas fa-file-export mr-2"></i>
@@ -34,5 +34,5 @@
   </template>
   
   <script setup>
-  defineEmits(['add-user', 'add-class', 'assign-students']);
+  defineEmits(['add-user', 'add-class', 'add-announcements']);
   </script>

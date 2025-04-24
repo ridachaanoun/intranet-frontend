@@ -52,16 +52,25 @@
         <QuickActions 
           @add-user="$emit('add-user')" 
           @add-class="$emit('add-class')" 
-          @assign-students="$emit('assign-students')" 
+          @add-announcements="showAddAnnouncementModal = true" 
         />
       </div>
+      
+      <!-- Add Announcement Modal -->
+      <AddAnnouncementModal
+        :visible="showAddAnnouncementModal"
+        @close="showAddAnnouncementModal = false"
+        @created="handleAnnouncementCreated"
+      />
     </div>
   </template>
   
   <script setup>
+  import { ref, defineProps, defineEmits } from 'vue';
   import StatCard from './StatCard.vue';
   import ActivityList from './ActivityList.vue';
   import QuickActions from './QuickActions.vue';
+  import AddAnnouncementModal from './AddAnnouncementModal.vue';
   
 const props = defineProps({
   recentActivities: {
@@ -69,6 +78,14 @@ const props = defineProps({
     default: () => []
   }
 })
-
   
+  const emits = defineEmits(['add-user', 'add-class', 'announcement-created']);
+  
+  const showAddAnnouncementModal = ref(false);
+  
+  const handleAnnouncementCreated = (announcement) => {
+    // Emit the created announcement to parent component
+    emits('announcement-created', announcement);
+    
+  };
   </script>
