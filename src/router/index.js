@@ -8,7 +8,7 @@ import AdminDashboard from '@/views/AdminDashboard.vue'
 import login from '@/views/Login.vue'
 import userProfile from '@/views/userProfile.vue'
 import classroom from '@/views/ClassroomView.vue'
-
+import { useUserStore } from '@/stores/userStore'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -63,4 +63,33 @@ const router = createRouter({
   ]
 })
 
-export default router
+// Global navigation guard
+router.beforeEach(async (to, from, next) => {
+  const userStore = useUserStore();
+
+  // Allow access to the login page without authentication
+  if (to.name === 'login') {
+    next();
+    return;
+  }
+
+  // Wait for user data to be fetched
+  if (!userStore.isFetched) {
+    try {
+      await userStore.fetchUserData();
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  }
+
+  // Check if the user is logged in
+  if (!userStore.user) {
+    // Redirect to login if not authenticated
+    next({ name: 'login' });
+  } else {
+    // Allow access if authenticated
+    next();
+  }
+});
+
+export default router;

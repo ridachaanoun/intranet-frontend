@@ -19,11 +19,6 @@ const isLoginPage = computed(() => route.path === '/login')
 onMounted(() => {
   window.addEventListener('resize', appStore.handleResize)
   
-  // Fetch user data when app mounts
-  if (!isLoginPage.value) {
-    userStore.fetchUserData()
-  }
-  
   // Uncomment to enable live clock - for now using the fixed time as specified
   appStore.updateDateTime()
   const interval = setInterval(appStore.updateDateTime, 1000)
