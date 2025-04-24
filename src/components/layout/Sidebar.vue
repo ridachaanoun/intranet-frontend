@@ -7,7 +7,6 @@ import { useUserStore } from '@/stores/userStore'
 const appStore = useAppStore()
 const userStore = useUserStore();
 
-userStore.fetchUserData()
 
 </script>
 

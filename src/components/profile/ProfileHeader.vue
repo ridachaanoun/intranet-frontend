@@ -89,11 +89,6 @@ import { useUserStore } from '@/stores/userStore'; // Ensure the store file name
 
 // Initialize the Pinia store
 const userStore = useUserStore();
-// Fetch the user data when the component is mounted
-onMounted(async () => {
-  await userStore.fetchUserData();
-});
-
 
 // const user = userStore.user;
 const user = computed(() => userStore.user);

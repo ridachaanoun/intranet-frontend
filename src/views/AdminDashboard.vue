@@ -101,7 +101,6 @@ const recentActivities = ref([])
 // Active section state
 const activeSection = ref('dashboard');
 
-userStore.fetchUserData();
 
 const showAddUserModal = ref(false);
 const showAddClassModal = ref(false);
