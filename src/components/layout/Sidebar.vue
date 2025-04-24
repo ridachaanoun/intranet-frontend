@@ -2,9 +2,12 @@
 import { useAppStore } from '../../stores/app'
 import { useRouter } from 'vue-router'
 import { onMounted } from 'vue'
+import { useUserStore } from '@/stores/userStore'
 
 const appStore = useAppStore()
-const router = useRouter()
+const userStore = useUserStore();
+
+userStore.fetchUserData()
 
 </script>
 
@@ -14,25 +17,19 @@ const router = useRouter()
       appStore.sidebarOpen ? 'w-64' : 'w-20'
     }`"
   >
-    <div class="p-4 flex items-center space-x-3 mb-4 border-b border-background-light pb-4">
+    <router-link to="/profile" class="p-4 flex items-center space-x-3 mb-4 border-b border-background-light pb-4">
       <img 
-        src="https://ui-avatars.com/api/?name=Rida+Chaanoun&background=00f0c0&color=fff" 
+        :src="userStore.user?.image_url" 
         class="w-10 h-10 rounded-full border-2 border-accent-500"
         alt="User Profile"
       />
       <div v-if="appStore.sidebarOpen">
-        <h3 class="font-medium text-text-primary">Rida Chaanoun</h3>
-        <p class="text-xs text-text-muted">@{{ appStore.currentUser }}</p>
+        <h3 class="font-medium text-text-primary">{{userStore.user?.name}}</h3>
+        <p class="text-xs text-text-muted">@{{ userStore.user?.email }}</p>
       </div>
-    </div>
+    </router-link>
     
     <nav class="px-2">
-      <!-- Profile Link (New) -->
-      <router-link to="/profile" class="flex items-center py-3 px-3 mb-1 rounded-lg text-text-primary hover:bg-surface-hover group transition-colors"
-        :class="{ 'bg-background-element shadow-soft glow-on-hover': $route.path === '/profile' }">
-        <i class="fas fa-user w-6 text-center text-lg" :class="$route.path === '/profile' ? 'text-primary-400' : 'group-hover:text-primary-400'"></i>
-        <span v-if="appStore.sidebarOpen" class="ml-3">Profile</span>
-      </router-link>
       
       <router-link to="/" class="flex items-center py-3 px-3 mb-1 rounded-lg text-text-primary hover:bg-surface-hover group transition-colors"
         :class="{ 'bg-background-element shadow-soft glow-on-hover': $route.path === '/' }">
