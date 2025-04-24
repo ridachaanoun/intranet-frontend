@@ -1,10 +1,15 @@
 <script setup>
 import { ref } from 'vue'
 import { useAppStore } from '../../stores/app'
+import { useUserStore } from '@/stores/userStore'
 
 const appStore = useAppStore()
 const notificationOpen = ref(false)
 const profileOpen = ref(false)
+const userStore = useUserStore();
+console.log(userStore.user);
+
+import logo from '@/assets/img/level/logo-white.png';
 </script>
 
 <template>
@@ -17,10 +22,9 @@ const profileOpen = ref(false)
       >
         <i class="fas fa-bars text-lg"></i>
       </button>
-      <div class="flex items-center space-x-2">
-        <img src="https://ui-avatars.com/api/?name=YouCode&background=00f0c0&color=fff" class="h-8 w-8 rounded" alt="YouCode Logo" />
-        <router-link to="/" class="text-text-primary font-bold tracking-wider hidden sm:inline-block">INTRANET</router-link>
-      </div>
+      <router-link to="/"  class="flex items-center space-x-2">
+        <img :src="logo" class="max-w-[100px]" alt="YouCode Logo" />
+      </router-link>
     </div>
     
     <div class="flex items-center space-x-2 sm:space-x-4">
@@ -79,23 +83,23 @@ const profileOpen = ref(false)
         <button 
           @click="profileOpen = !profileOpen"
           @blur="() => setTimeout(() => profileOpen = false, 200)"
-          class="flex items-center space-x-2 text-text-primary hover:text-primary-400 transition-colors rounded-full focus:outline-none focus:ring-2 focus:ring-accent-500"
+          class="flex items-center space-x-2 text-text-primary hover:text-primary-400 transition-colors rounded-full focus:outline-none focus:ring-2 focus:ring-accent-900"
           aria-label="User menu"
         >
           <img 
-            src="https://ui-avatars.com/api/?name=Rida+Chaanoun&background=00f0c0&color=fff" 
-            class="w-8 h-8 rounded-full border-2 border-accent-500"
+            :src="userStore.user?.image_url" 
+            class="w-8 h-8 rounded-full border-2"
             alt="Rida Chaanoun profile picture"
           />
-          <span class="font-medium hidden sm:inline-block">Rida Chaanoun</span>
+          <span class="font-medium hidden sm:inline-block">{{ userStore.user?.name }}</span>
           <i class="fas fa-chevron-down text-xs hidden sm:inline-block"></i>
         </button>
         
         <div v-if="profileOpen" class="absolute right-0 mt-2 w-48 bg-surface rounded-lg shadow-card overflow-hidden z-50 glass-effect">
           <div class="py-1">
-            <a href="#" class="block px-4 py-2 text-sm text-text-primary hover:bg-surface-hover">
+            <router-link to="/profile" class="block px-4 py-2 text-sm text-text-primary hover:bg-surface-hover">
               <i class="fas fa-user mr-2 text-primary-400"></i> Your Profile
-            </a>
+            </router-link>
             <a href="#" class="block px-4 py-2 text-sm text-text-primary hover:bg-surface-hover">
               <i class="fas fa-cog mr-2 text-primary-400"></i> Settings
             </a>
