@@ -8,6 +8,7 @@ import AdminDashboard from '@/views/AdminDashboard.vue'
 import login from '@/views/Login.vue'
 import userProfile from '@/views/userProfile.vue'
 import classroom from '@/views/ClassroomView.vue'
+import TeacherDashboard from '@/views/TeacherDashboard.vue'
 import { useUserStore } from '@/stores/userStore'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -58,8 +59,12 @@ const router = createRouter({
       name: 'classrom',
       component: classroom,
       props: true
+    },
+    {
+      path: '/TeacherDashboard',
+      name: 'TeacherDashboard',
+      component: TeacherDashboard
     }
-
   ]
 })
 
