@@ -221,22 +221,3 @@ const getEventIconClass = (event) => {
   }
 };
 </script>
-
-<style scoped>
-/* Styles for the component */
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-.timeline-item:hover {
-  z-index: 10;
-}
-</style>

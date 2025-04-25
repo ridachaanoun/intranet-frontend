@@ -1,7 +1,5 @@
 <script setup>
 import { useAppStore } from '../../stores/app'
-import { useRouter } from 'vue-router'
-import { onMounted } from 'vue'
 import { useUserStore } from '@/stores/userStore'
 
 const appStore = useAppStore()
@@ -24,7 +22,7 @@ const userStore = useUserStore();
       />
       <div v-if="appStore.sidebarOpen">
         <h3 class="font-medium text-text-primary">{{userStore.user?.name}}</h3>
-        <p class="text-xs text-text-muted">@{{ userStore.user?.email }}</p>
+        <p class="text-xs text-text-muted break-all">@{{ userStore.user?.email }}</p>
       </div>
     </router-link>
     

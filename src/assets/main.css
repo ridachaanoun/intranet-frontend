@@ -11,25 +11,16 @@ body {
   background-attachment: fixed;
 }
 
-/* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-}
+  width: 3px;
 
-::-webkit-scrollbar-track {
-  background: #0c0b29;
-  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #00d8ab;
-  border-radius: 3px;
+  background: rgb(102, 51, 153);
+  border-radius: 10px;
+  transition: all 0.3s ease;
 }
-
-::-webkit-scrollbar-thumb:hover {
-  background: #00f0c0;
-}
-
 /* Card hover effect */
 .card-hover {
   transition: all 0.3s ease;

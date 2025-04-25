@@ -53,22 +53,3 @@ defineProps({
 
 </script>
   
-  <style scoped>
-  /* Custom scrollbar styling */
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: #f1f1f1;
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 3px;
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: #aaa;
-  }
-  </style>
