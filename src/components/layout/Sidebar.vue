@@ -72,6 +72,12 @@ const userStore = useUserStore();
         <span v-if="appStore.sidebarOpen" class="ml-3">Admin Dashboard</span>
       </router-link>
       
+      <router-link to="/TeacherDashboard" class="flex items-center py-3 px-3 mb-1 mt-4 rounded-lg text-text-primary hover:bg-surface-hover group transition-colors"
+        :class="{ 'bg-background-element shadow-soft glow-on-hover': $route.path.includes('/TeacherDashboard') }">
+        <i class="fas fa-chalkboard-teacher w-6 text-center text-lg" :class="$route.path.includes('/TeacherDashboard') ? 'text-secondary-400' : 'group-hover:text-secondary-400'"></i>
+        <span v-if="appStore.sidebarOpen" class="ml-3">Teacher Dashboard</span>
+      </router-link>
+      
       <div class="mt-auto border-t border-background-light pt-4 mt-8">
         <h6 v-if="appStore.sidebarOpen" class="text-xs uppercase text-text-muted font-semibold px-3 mb-2">Settings</h6>
         <a href="#" class="flex items-center py-2 px-3 mb-1 rounded-lg text-text-primary hover:bg-surface-hover group transition-colors">
