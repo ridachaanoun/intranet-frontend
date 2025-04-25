@@ -102,12 +102,22 @@
             
             <!-- Assignment metadata -->
             <div class="flex flex-wrap gap-x-6 gap-y-3 text-sm">
-              <div class="flex items-center text-text-secondary">
-                <div class="w-8 h-8 rounded-full bg-surface-hover flex items-center justify-center mr-2">
-                  <i class="fas fa-user-tie text-primary-500"></i>
-                </div>
-                <span>{{ assignment.assigned_by }}</span>
-              </div>
+              <router-link 
+          :to="`/profile/${assignment.assigned_by.id}`" 
+          class="flex items-center text-text-secondary hover:bg-surface-hover p-2 rounded-lg transition-colors"
+          >
+          <div class="flex items-center">
+            <img 
+            :src="assignment.assigned_by.image_url" 
+            :alt="assignment.assigned_by.name"
+            class="w-8 h-8 rounded-full object-cover mr-2"
+            />
+            <div class="flex flex-col">
+            <span class="font-medium">{{ assignment.assigned_by.name }}</span>
+            <span class="text-xs text-text-secondary">{{ assignment.assigned_by.role }}</span>
+            </div>
+          </div>
+          </router-link>
               
               <div 
                 class="flex items-center text-text-secondary"
@@ -127,13 +137,26 @@
                   {{ formatDate(assignment.due_date) }}
                 </span>
               </div>
-              
-              <!-- Assignment grade if available -->
-              <div class="flex items-center text-text-secondary" v-if="assignment.grade">
+
+              <div class="flex items-center text-text-secondary">
                 <div class="w-8 h-8 rounded-full bg-surface-hover flex items-center justify-center mr-2">
-                  <i class="fas fa-star text-amber-500"></i>
+                  <i class="fas fa-book text-primary-500"></i>
                 </div>
-                <span>Grade: <span class="font-semibold text-amber-600">{{ assignment.grade }}/100</span></span>
+                <span>Task Type: {{ assignment.task_type }}</span>
+              </div>
+
+              <div class="flex items-center text-text-secondary">
+                <div class="w-8 h-8 rounded-full bg-surface-hover flex items-center justify-center mr-2">
+                  <i class="fas fa-star text-primary-500"></i>
+                </div>
+                <span>Points: {{ assignment.points }}</span>
+              </div>
+
+              <div class="flex items-center text-text-secondary">
+                <div class="w-8 h-8 rounded-full bg-surface-hover flex items-center justify-center mr-2">
+                  <i class="fas fa-users text-primary-500"></i>
+                </div>
+                <span>Assignment Type: {{ assignment.assignment_type }}</span>
               </div>
             </div>
           </div>
