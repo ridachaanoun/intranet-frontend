@@ -114,6 +114,8 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useTeacherStore } from '@/stores/teacherStore';
+import { useUserStore } from '@/stores/userStore'; // Assuming you have this
 
 // Import components
 import TeacherOverview from '@/components/teacher/TeacherOverview.vue';
@@ -124,19 +126,13 @@ import CreateTaskModal from '@/components/teacher/CreateTaskModal.vue';
 import MarkAbsenceModal from '@/components/teacher/MarkAbsenceModal.vue';
 import ClassroomAbsences from '@/components/teacher/ClassroomAbsences.vue';
 
+// Initialize stores
+const teacherStore = useTeacherStore();
+const userStore = useUserStore();
+
 // Active section state
 const activeSection = ref('overview');
-const classrooms = ref([]);
 const recentActivities = ref([]);
-
-// Mock data for current user
-const currentUser = computed(() => ({
-  id: "t-001",
-  name: "Mohammed Alami",
-  email: "m.alami@youcode.ma",
-  role: "teacher",
-  avatar: "/avatars/teacher-1.jpg"
-}));
 
 // Modal states
 const showAssignPointsModal = ref(false);
@@ -161,42 +157,18 @@ const sectionTitle = computed(() => {
   }
 });
 
-// Initialize with static data when component is mounted
-onMounted(() => {
-  // Static classroom data
-  classrooms.value = [
-    {
-      id: "c-001",
-      name: "Web Development 101",
-      description: "Introduction to HTML, CSS, and JavaScript",
-      students: [
-        { id: "s-001", name: "Ahmed Hassan", email: "a.hassan@youcode.ma", points: 120 },
-        { id: "s-002", name: "Sara Moukrim", email: "s.moukrim@youcode.ma", points: 145 },
-        { id: "s-003", name: "Younes El Khalifi", email: "y.elkhalifi@youcode.ma", points: 110 }
-      ]
-    },
-    {
-      id: "c-002",
-      name: "Advanced JavaScript",
-      description: "Deep dive into modern JavaScript frameworks",
-      students: [
-        { id: "s-004", name: "Karim Najib", email: "k.najib@youcode.ma", points: 95 },
-        { id: "s-005", name: "Layla Bennani", email: "l.bennani@youcode.ma", points: 130 }
-      ]
-    },
-    {
-      id: "c-003",
-      name: "Database Design",
-      description: "Relational databases and SQL fundamentals",
-      students: [
-        { id: "s-006", name: "Omar Farid", email: "o.farid@youcode.ma", points: 88 },
-        { id: "s-007", name: "Nadia Ziani", email: "n.ziani@youcode.ma", points: 105 },
-        { id: "s-008", name: "Hassan Mesbahi", email: "h.mesbahi@youcode.ma", points: 115 }
-      ]
-    }
-  ];
-      
-  // Load activities from localStorage or initialize with sample data
+// Use computed to get classrooms from the store
+const classrooms = computed(() => teacherStore.classrooms);
+
+// Get current user from user store
+const currentUser = computed(() => userStore.user);
+
+// Initialize with data when component is mounted
+onMounted(async () => {
+  // Fetch classrooms data from API
+  await teacherStore.fetchClassrooms();
+  
+  // Load activities from localStorage
   loadActivities();
   
   // If no activities are found in localStorage, create sample ones
@@ -223,7 +195,7 @@ onMounted(() => {
         type: 'review',
         icon: 'fas fa-check-circle',
         iconBg: 'bg-secondary-500/20',
-        iconColor: 'text-secondary-400',
+        iconColor: 'text-secondary-500',
         message: 'Reviewed submission from <span class="font-medium">Sara Moukrim</span>'
       }
     ];
@@ -254,7 +226,8 @@ const handlePointsAssigned = (data) => {
   closeAssignPointsModal();
 };
 
-const handleTaskCreated = (task) => {
+const handleTaskCreated = async (task) => {
+try {
   recentActivities.value.unshift({
     id: Date.now(),
     type: 'task',
@@ -265,6 +238,9 @@ const handleTaskCreated = (task) => {
   });
   saveActivities();
   showCreateTaskModal.value = false;
+} catch (error) {
+  console.error('Error creating task:', error);
+}
 };
 
 const openMarkAbsenceModal = (classroomId) => {
