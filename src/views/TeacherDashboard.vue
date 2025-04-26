@@ -55,7 +55,6 @@
         <!-- Dynamic Content Based on Active Section -->
         <TeacherOverview 
           v-if="activeSection === 'overview'" 
-          :classrooms="classrooms"
           :recentActivities="recentActivities"
           class="fade-in"
         />

@@ -12,29 +12,29 @@
             </span>
           </div>
           <p class="text-2xl font-bold text-text-primary">{{ totalStudents }}</p>
-          <p class="text-xs text-text-muted mt-1">Across {{ classrooms.length }} classrooms</p>
+          <p class="text-xs text-text-muted mt-1">Across {{ totalClassrooms }} classrooms</p>
         </div>
         
         <div class="bg-surface rounded-lg p-4 shadow-card hover:shadow-lg transition-shadow">
           <div class="flex items-center justify-between mb-2">
-            <h3 class="text-sm font-medium text-text-secondary">Active Tasks</h3>
+            <h3 class="text-sm font-medium text-text-secondary">Total Tasks</h3>
             <span class="p-2 bg-accent-500/10 rounded-full">
-              <i class="fas fa-tasks text-accent-400"></i>
+              <i class="fas fa-clipboard-list text-accent-400"></i>
             </span>
           </div>
-          <p class="text-2xl font-bold text-text-primary">{{ activeTasks }}</p>
+          <p class="text-2xl font-bold text-text-primary">{{ totalTasks }}</p>
           <p class="text-xs text-text-muted mt-1">Due this week</p>
         </div>
         
         <div class="bg-surface rounded-lg p-4 shadow-card hover:shadow-lg transition-shadow">
           <div class="flex items-center justify-between mb-2">
-            <h3 class="text-sm font-medium text-text-secondary">Pending Reviews</h3>
+            <h3 class="text-sm font-medium text-text-secondary">Total Classrooms</h3>
             <span class="p-2 bg-secondary-500/10 rounded-full">
-              <i class="fas fa-clipboard-check text-secondary-400"></i>
+              <i class="fas fa-chalkboard text-secondary-400"></i>
             </span>
           </div>
-          <p class="text-2xl font-bold text-text-primary">{{ pendingReviews }}</p>
-          <p class="text-xs text-text-muted mt-1">Submissions awaiting review</p>
+          <p class="text-2xl font-bold text-text-primary">{{ totalClassrooms }}</p>
+          <p class="text-xs text-text-muted mt-1">Active teaching spaces</p>
         </div>
       </div>
       
@@ -107,29 +107,8 @@
           <h2 class="text-lg font-semibold text-text-primary">Recent Activities</h2>
         </div>
         
-        <div class="max-h-96 overflow-y-auto">
-          <div v-if="recentActivities && recentActivities.length" class="divide-y divide-background-light">
-            <div 
-              v-for="activity in recentActivities" 
-              :key="activity.id" 
-              class="p-4 hover:bg-surface-hover transition-colors"
-            >
-              <div class="flex">
-                <div :class="[activity.iconBg, 'p-2 rounded-full mr-3']">
-                  <i :class="[activity.iconColor, activity.icon]"></i>
-                </div>
-                <div>
-                  <p class="text-sm text-text-secondary" v-html="activity.message"></p>
-                  <p class="text-xs text-text-muted mt-1">{{ formatTimeAgo(activity.id) }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div v-else class="p-8 text-center text-text-muted">
-            <i class="fas fa-history text-4xl mb-3 opacity-30"></i>
-            <p>No recent activities</p>
-          </div>
-        </div>
+        <!-- Use ActivityList component -->
+        <ActivityList :activities="recentActivities" />
       </div>
     </div>
   </div>
@@ -137,54 +116,21 @@
 
 <script setup>
 import { defineProps, computed } from 'vue';
+import { useTeacherStore } from '@/stores/teacherStore';
+import ActivityList from '@/components/Admin/ActivityList.vue';
 
 const props = defineProps({
-  classrooms: {
-    type: Array,
-    required: true
-  },
   recentActivities: {
     type: Array,
     default: () => []
   }
 });
 
+const teacherStore = useTeacherStore();
+const classrooms = computed(() => teacherStore.classrooms);
+
 // Computed properties
-const totalStudents = computed(() => {
-  return props.classrooms.reduce((total, classroom) => {
-    return total + (classroom.students?.length || 0);
-  }, 0);
-});
-
-const activeTasks = computed(() => {
-  // Mock value - in real app would calculate from actual tasks
-  return 5;
-});
-
-const pendingReviews = computed(() => {
-  // Mock value - in real app would calculate from actual submissions
-  return 8;
-});
-
-// Format time ago function
-const formatTimeAgo = (timestamp) => {
-  const seconds = Math.floor((Date.now() - timestamp) / 1000);
-  
-  let interval = Math.floor(seconds / 31536000);
-  if (interval > 1) return `${interval} years ago`;
-  
-  interval = Math.floor(seconds / 2592000);
-  if (interval > 1) return `${interval} months ago`;
-  
-  interval = Math.floor(seconds / 86400);
-  if (interval > 1) return `${interval} days ago`;
-  
-  interval = Math.floor(seconds / 3600);
-  if (interval > 1) return `${interval} hours ago`;
-  
-  interval = Math.floor(seconds / 60);
-  if (interval > 1) return `${interval} minutes ago`;
-  
-  return 'Just now';
-};
+const totalStudents = computed(() => teacherStore.totalStudents);
+const totalTasks = computed(() => teacherStore.totalTasks);
+const totalClassrooms = computed(() => teacherStore.totalClassrooms);
 </script>
