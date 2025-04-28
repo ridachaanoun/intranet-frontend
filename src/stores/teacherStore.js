@@ -50,6 +50,11 @@ export const useTeacherStore = defineStore('teacher', {
       const classroom = state.classrooms.find(c => c.id === classroomId);
       return classroom ? classroom.students || [] : [];
     },
+
+    // Get students in the selected classroom
+    studentsInSelectedClassroom(state) {
+      return state.selectedClassroom?.students || [];
+    },
   },
 
   actions: {
