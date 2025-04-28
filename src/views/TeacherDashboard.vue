@@ -94,7 +94,6 @@
     
     <CreateTaskModal 
       v-if="showCreateTaskModal" 
-      :classrooms="classrooms"
       @close="showCreateTaskModal = false" 
       @task-created="handleTaskCreated"
     />
@@ -168,36 +167,6 @@ onMounted(async () => {
   // Load activities from localStorage
   loadActivities();
   
-  // If no activities are found in localStorage, create sample ones
-  if (recentActivities.value.length === 0) {
-    recentActivities.value = [
-      {
-        id: Date.now() - 1000000, 
-        type: 'task',
-        icon: 'fas fa-clipboard-list',
-        iconBg: 'bg-primary-500/20',
-        iconColor: 'text-primary-400',
-        message: 'Created task <span class="font-medium">Project Submission</span>'
-      },
-      {
-        id: Date.now() - 3600000, 
-        type: 'points',
-        icon: 'fas fa-star',
-        iconBg: 'bg-accent-500/20',
-        iconColor: 'text-accent-400',
-        message: 'Assigned 10 points to <span class="font-medium">Ahmed Hassan</span>'
-      },
-      {
-        id: Date.now() - 86400000, 
-        type: 'review',
-        icon: 'fas fa-check-circle',
-        iconBg: 'bg-secondary-500/20',
-        iconColor: 'text-secondary-500',
-        message: 'Reviewed submission from <span class="font-medium">Sara Moukrim</span>'
-      }
-    ];
-    saveActivities();
-  }
 });
 
 const openAssignPointsModal = (student) => {
@@ -225,6 +194,14 @@ const handlePointsAssigned = (data) => {
 
 const handleTaskCreated = async (task) => {
 try {
+  console.log(task);
+  
+  teacherStore.classrooms.forEach((classroom) => {
+    if (classroom.id === task.classroom_id) {
+      classroom.tasks.push(task);
+    }
+  });
+  
   recentActivities.value.unshift({
     id: Date.now(),
     type: 'task',

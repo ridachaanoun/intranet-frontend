@@ -158,7 +158,7 @@ const selectedClassroom = computed(() => teacherStore.selectedClassroom);
 
 // Get tasks for the selected classroom
 const tasks = computed(() => {
-  return selectedClassroom.value?.tasks || [];
+  return selectedClassroom.value?.tasks ? [...selectedClassroom.value.tasks].reverse() : [];
 });
 
 // Filtered tasks
