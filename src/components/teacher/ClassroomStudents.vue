@@ -16,6 +16,7 @@
             <select 
               v-model="selectedClassroomId" 
               class="bg-background rounded-lg border border-background-element py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-primary-400 text-text-primary appearance-none"
+              @change="selectClassroom"
             >
               <option v-for="classroom in classrooms" :key="classroom.id" :value="classroom.id">
                 {{ classroom.name }}
@@ -44,7 +45,7 @@
         </div>
       </div>
       
-      <div v-if="selectedClassroom" class="overflow-x-auto">
+      <div v-if="students.length > 0" class="overflow-x-auto">
         <table class="min-w-full divide-y divide-background-light">
           <thead class="bg-background-element">
             <tr>
@@ -60,7 +61,7 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
                   <div class="flex-shrink-0 h-10 w-10">
-                    <img class="h-10 w-10 rounded-full object-cover" :src="student.avatar || 'https://ui-avatars.com/api/?name=' + student.name" alt="" />
+                    <img class="h-10 w-10 rounded-full object-cover" :src="student.image_url" />
                   </div>
                   <div class="ml-4">
                     <div class="text-sm font-medium text-text-primary">{{ student.name }}</div>
@@ -72,22 +73,25 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
-                  <span class="text-sm text-text-secondary mr-2">{{ student.points || 0 }}</span>
+                  <span class="text-sm text-text-secondary mr-2">{{ student.total_points || 0 }}</span>
                   <i class="fas fa-star text-yellow-400 text-xs"></i>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-text-secondary">{{ student.completedTasks || 0 }}/{{ student.totalTasks || 0 }}</div>
+                <div class="text-sm text-text-secondary">{{ student.points.length || 0 }}/{{ selectedClassroom?.tasks?.length || 0 }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <router-link 
+                  :to="{ name: 'user-profile', params: { id: student.id } }" 
+                  class="text-accent-400 hover:text-accent-600 mr-3"
+                >
+                  <i class="fas fa-user mr-1"></i> Profile
+                </router-link>
                 <button 
                   @click="$emit('assign-points', student)" 
-                  class="text-primary-400 hover:text-primary-600 mr-3"
+                  class="text-primary-400 hover:text-primary-600"
                 >
                   <i class="fas fa-plus-circle mr-1"></i> Points
-                </button>
-                <button class="text-accent-400 hover:text-accent-600">
-                  <i class="fas fa-eye mr-1"></i> View
                 </button>
               </td>
             </tr>
@@ -103,47 +107,35 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
+import { useTeacherStore } from '@/stores/teacherStore';
 
-const props = defineProps({
-  classrooms: {
-    type: Array,
-    required: true
-  }
-});
+const teacherStore = useTeacherStore();
 
-const emit = defineEmits(['assign-points', 'mark-absence']);
-
-// State
 const selectedClassroomId = ref('');
 const searchQuery = ref('');
 
-// Computed properties
-const selectedClassroom = computed(() => {
-  if (!selectedClassroomId.value && props.classrooms.length > 0) {
-    return props.classrooms[0];
-  }
-  return props.classrooms.find(classroom => classroom.id === selectedClassroomId.value);
-});
+const classrooms = computed(() => teacherStore.classrooms);
+const students = computed(() => teacherStore.studentsInSelectedClassroom);
+const selectedClassroom = computed(() => teacherStore.selectedClassroom);
 
-// Auto-select first classroom when available
-watch(() => props.classrooms, (newClassrooms) => {
-  if (newClassrooms.length > 0 && !selectedClassroomId.value) {
-    selectedClassroomId.value = newClassrooms[0].id;
-  }
-}, { immediate: true });
+// Select classroom and update the store
+const selectClassroom = () => {
+  teacherStore.selectClassroom(selectedClassroomId.value);
+};
 
+if (classrooms.value.length > 0 && !selectedClassroomId.value) {
+  selectedClassroomId.value = classrooms.value[0].id;
+}
+
+// Filter students based on the search query
 const filteredStudents = computed(() => {
-  if (!selectedClassroom.value || !selectedClassroom.value.students) {
-    return [];
-  }
-  
   const query = searchQuery.value.toLowerCase();
   if (!query) {
-    return selectedClassroom.value.students;
+    return students.value;
   }
   
-  return selectedClassroom.value.students.filter(student => {
+  return students.value.filter(student => {
     return student.name.toLowerCase().includes(query) || 
            student.email.toLowerCase().includes(query);
   });
