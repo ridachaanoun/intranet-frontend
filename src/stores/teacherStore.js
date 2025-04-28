@@ -11,6 +11,12 @@ export const useTeacherStore = defineStore('teacher', {
   }),
 
   getters: {
+    // Get all tasks for a specific classroom
+    tasksByClassroom: (state) => (classroomId) => {
+      const classroom = state.classrooms.find(c => c.id === classroomId);
+      return classroom ? classroom.tasks || [] : [];
+    },
+
     // Get all students from all classrooms
     allStudents(state) {
       let students = [];
@@ -32,10 +38,8 @@ export const useTeacherStore = defineStore('teacher', {
     totalTasks(state) {
       let count = 0;
       state.classrooms.forEach(classroom => {
-        if (classroom.students) {
-          classroom.students.forEach(student => {
-            count += student.tasks_assigned_to ? student.tasks_assigned_to.length : 0;
-          });
+        if (classroom.tasks) {
+          count += classroom.tasks.length;
         }
       });
       return count;
@@ -63,6 +67,7 @@ export const useTeacherStore = defineStore('teacher', {
         
         if (response.data.success) {
           this.classrooms = response.data.data;
+          this.selectedClassroom = this.classrooms.length > 0 ? this.classrooms[0] : null; // Set first classroom
           this.dataFetched = true; 
         } else {
           this.error = 'Failed to fetch classrooms';

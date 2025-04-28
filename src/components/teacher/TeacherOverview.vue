@@ -132,5 +132,5 @@ const classrooms = computed(() => teacherStore.classrooms);
 // Computed properties
 const totalStudents = computed(() => teacherStore.totalStudents);
 const totalTasks = computed(() => teacherStore.totalTasks);
-const totalClassrooms = computed(() => teacherStore.totalClassrooms);
+const totalClassrooms = computed(() => teacherStore.classrooms.length);
 </script>
