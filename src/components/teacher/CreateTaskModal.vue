@@ -35,7 +35,7 @@
               <select 
                 v-model="classroomId" 
                 class="w-full px-4 py-2 bg-background border border-background-element rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-400 text-text-primary"
-                @change="loadStudents"
+                @change="teacherStore.selectClassroom(classroomId)"
               >
                 <option v-for="classroom in classrooms" :key="classroom.id" :value="classroom.id">
                   {{ classroom.name }}
@@ -72,8 +72,8 @@
           <div v-if="assignmentType === 'students'" class="border border-background-element rounded-lg p-4 bg-background/50">
             <label class="block text-sm font-medium text-text-secondary mb-2">Select Students</label>
             
-            <div v-if="availableStudents.length > 0" class="max-h-40 overflow-y-auto space-y-2">
-              <div v-for="student in availableStudents" :key="student.id" 
+            <div v-if="teacherStore.studentsInSelectedClassroom.length > 0" class="max-h-40 overflow-y-auto space-y-2">
+              <div v-for="student in teacherStore.studentsInSelectedClassroom" :key="student.id" 
                 class="flex items-center p-2 hover:bg-background-element rounded-md">
                 <input 
                   type="checkbox" 
@@ -127,17 +127,6 @@
               </select>
             </div>
           </div>
-          
-          <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1">Attachments (optional)</label>
-            <div class="flex items-center justify-center px-4 py-6 border-2 border-dashed border-background-element rounded-lg">
-              <div class="text-center">
-                <i class="fas fa-upload text-text-muted mb-2 text-xl"></i>
-                <p class="text-sm text-text-secondary">Drag and drop files here or</p>
-                <button class="mt-2 text-accent-400 hover:text-accent-600 font-medium text-sm">Browse Files</button>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
       
@@ -163,16 +152,14 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, computed, watch } from 'vue';
-
-const props = defineProps({
-  classrooms: {
-    type: Array,
-    required: true
-  }
-});
+import { defineEmits, ref, computed } from 'vue';
+import { useTeacherStore } from '@/stores/teacherStore';
+import api from '@/axios';
 
 const emit = defineEmits(['close', 'task-created']);
+
+// Access teacherStore
+const teacherStore = useTeacherStore();
 
 // Form state
 const title = ref('');
@@ -183,35 +170,19 @@ const points = ref(10);
 const taskType = ref('Assignment');
 const assignmentType = ref('class'); // 'class' or 'students'
 const selectedStudentIds = ref([]);
-const availableStudents = ref([]);
 
-// Initialize with the first classroom if available
-if (props.classrooms.length > 0) {
-  classroomId.value = props.classrooms[0].id;
-  loadStudents();
+const classrooms = computed(() => teacherStore.classrooms);
+const selectedClassroom = computed(() => teacherStore.selectedClassroom);
+const availableStudents = computed(() => teacherStore.studentsInSelectedClassroom);
+
+if (selectedClassroom.value) {
+  classroomId.value = selectedClassroom.value.id;
 }
 
 // Set default due date to 1 week from now
 const oneWeekFromNow = new Date();
 oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
 dueDate.value = oneWeekFromNow.toISOString().split('T')[0];
-
-// Load students when classroom changes
-function loadStudents() {
-  if (classroomId.value) {
-    const selectedClassroom = props.classrooms.find(c => c.id === classroomId.value);
-    if (selectedClassroom && selectedClassroom.students) {
-      availableStudents.value = selectedClassroom.students;
-      // Reset selected students when classroom changes
-      selectedStudentIds.value = [];
-    } else {
-      availableStudents.value = [];
-    }
-  }
-}
-
-// Watch for classroom changes
-watch(() => classroomId.value, loadStudents);
 
 // Helper functions for student selection
 function selectAllStudents() {
@@ -230,7 +201,6 @@ const isFormValid = computed(() => {
                           dueDate.value && 
                           points.value >= 0;
                           
-  // Add student validation for 'students' assignment type
   if (assignmentType.value === 'students') {
     return basicValidation && selectedStudentIds.value.length > 0;
   }
@@ -238,45 +208,37 @@ const isFormValid = computed(() => {
   return basicValidation;
 });
 
-// Submit the form
-const createTask = () => {
+// Submit the form and save task to the database
+const createTask = async () => {
   if (!isFormValid.value) return;
-  
-  const selectedClassroom = props.classrooms.find(c => c.id === classroomId.value);
-  let assignedStudents = [];
-  
-  if (assignmentType.value === 'students') {
-    // Get the selected students' details
-    assignedStudents = availableStudents.value
-      .filter(student => selectedStudentIds.value.includes(student.id))
-      .map(student => ({ 
-        id: student.id, 
-        name: student.name 
-      }));
-  } else {
-    // If assigning to whole class, include all students
-    assignedStudents = selectedClassroom?.students?.map(student => ({
-      id: student.id,
-      name: student.name
-    })) || [];
-  }
-  
-  const newTask = {
-    id: Date.now(),
+
+  const payload = {
     title: title.value,
     description: description.value,
     classroom_id: classroomId.value,
-    classroom_name: selectedClassroom?.name || '',
-    due_date: new Date(dueDate.value),
+    due_date: dueDate.value,
     points: points.value,
     task_type: taskType.value,
-    status: 'active',
-    created_at: new Date(),
     assignment_type: assignmentType.value,
-    assigned_students: assignedStudents
   };
-  
-  emit('task-created', newTask);
+
+  if (assignmentType.value === 'students') {
+    payload.student_ids = selectedStudentIds.value;
+  }
+
+  try {
+    const response = await api.post('/teacher/assign-task', payload);
+
+    if (response.data.task) {
+      emit('task-created', response.data.task);
+    }
+
+    if (response.data.invalid_students?.length) {
+      console.warn('Invalid students:', response.data.invalid_students);
+    }
+  } catch (error) {
+    console.error('Error assigning task:', error);
+  }
 };
 </script>
 

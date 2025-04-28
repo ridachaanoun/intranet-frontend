@@ -66,7 +66,6 @@
         />
         <ClassroomTasks 
           v-if="activeSection === 'tasks'" 
-          :classrooms="classrooms"
           @create-task="showCreateTaskModal = true" 
           class="fade-in" 
         />
