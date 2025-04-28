@@ -84,32 +84,46 @@
               >
                 {{ task.status }}
               </span>
+              <span class="text-xs px-2 py-1 rounded bg-background text-text-secondary">
+                Points: {{ task.points }}
+              </span>
             </div>
           </div>
           <p class="text-sm text-text-secondary mb-4 ml-4">
             {{ task.description }}
           </p>
           <div class="flex justify-between items-center ml-4">
-            <div class="flex items-center">
-              <i class="fas fa-users text-text-muted mr-1"></i>
-              <span v-if="task.assignment_type === 'class'" class="text-xs text-text-muted">
-                Assigned to entire class
-              </span>
-              <span v-else-if="task.assigned_students?.length === 1" class="text-xs text-text-muted">
-                Assigned to {{ task.assigned_students[0].name }}
-              </span>
-              <span v-else class="text-xs text-text-muted">
-                Assigned to {{ task.assigned_students?.length || 0 }} students
-              </span>
-              <span class="mx-2 text-xs text-text-muted">•</span>
-              <span class="text-xs text-text-muted">{{ task.submission_count || 0 }} submissions</span>
+            <div class="flex items-center space-x-2">
+              <div 
+                v-for="(student, index) in task.assigned_students.slice(0, 3)" 
+                :key="student.id" 
+                class="relative w-10 h-10"
+              >
+                <router-link 
+                  :to="`/profile/${student.id}`" 
+                  class="block w-full h-full"
+                >
+                  <img 
+                    :src="student.image_url" 
+                    :alt="student.name" 
+                    :title="student.name"
+                    class="w-full h-full object-cover rounded border border-background-element"
+                  />
+                </router-link>
+                <span 
+                  v-if="index === 2 && task.assigned_students.length > 3" 
+                  class="absolute inset-0 bg-black/50 text-white text-xs flex items-center justify-center rounded"
+                >
+                  +{{ task.assigned_students.length - 3 }}
+                </span>
+              </div>
             </div>
             <div class="flex space-x-3">
-              <button class="text-sm text-primary-400 hover:text-primary-600 flex items-center">
-                <i class="fas fa-edit mr-1"></i> Edit
-              </button>
-              <button class="text-sm text-accent-400 hover:text-accent-600 flex items-center">
-                <i class="fas fa-eye mr-1"></i> View Submissions
+              <button 
+                class="text-sm text-primary-400 hover:text-primary-600 flex items-center"
+                @click="showTaskModal(task)"
+              >
+                <i class="fas fa-users mr-1"></i> View Students
               </button>
             </div>
           </div>
@@ -130,86 +144,49 @@
         <p>Select a classroom to see tasks</p>
       </div>
     </div>
+    <div v-if="selectedTask">
+      <StudentModal 
+        :students="selectedTask.assigned_students" 
+        @close="selectedTask = null" 
+      />
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
 import { useTeacherStore } from '@/stores/teacherStore';
+import StudentModal from './StudentModal.vue'; // Import the modal component
 
-// Initialize teacher store
 const teacherStore = useTeacherStore();
-
-// State
 const searchQuery = ref('');
 const statusFilter = ref('all');
+const selectedTask = ref(null); // For modal
 
-// Get classrooms from teacherStore
 const classrooms = computed(() => teacherStore.classrooms);
-
-// Bind selectedClassroomId to the store's selectedClassroom
 const selectedClassroomId = computed({
-  get: () => teacherStore.selectedClassroom?.id || (classrooms.value.length > 0 ? classrooms.value[0].id : ''), // Default to first classroom
+  get: () => teacherStore.selectedClassroom?.id || (classrooms.value.length > 0 ? classrooms.value[0].id : ''),
   set: (value) => teacherStore.selectClassroom(value),
 });
-
-// Use the store's selectedClassroom directly
 const selectedClassroom = computed(() => teacherStore.selectedClassroom);
-
-// Get tasks for the selected classroom
-const tasks = computed(() => {
-  return selectedClassroom.value?.tasks ? [...selectedClassroom.value.tasks].reverse() : [];
-});
-
-// Filtered tasks
+const tasks = computed(() => selectedClassroom.value?.tasks ? [...selectedClassroom.value.tasks].reverse() : []);
 const filteredTasks = computed(() => {
   let result = tasks.value;
-
-  // Search filter
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
-    result = result.filter(task => {
-      return task.title.toLowerCase().includes(query) || 
-             task.description.toLowerCase().includes(query);
-    });
+    result = result.filter(task => task.title.toLowerCase().includes(query) || task.description.toLowerCase().includes(query));
   }
-
-  // Status filter
   if (statusFilter.value !== 'all') {
     result = result.filter(task => task.status === statusFilter.value);
   }
-
   return result;
 });
 
-// Helper functions
-const formatDate = (date) => {
-  return new Date(date).toLocaleDateString('en-US', { 
-    month: 'short', 
-    day: 'numeric', 
-    year: 'numeric'
-  });
-};
+const formatDate = (date) => new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+const getStatusClass = (status) => status === 'Active' ? 'bg-primary-500' : status === 'Pending' ? 'bg-accent-500' : 'bg-secondary-500';
+const getStatusBadgeClass = (status) => status === 'Active' ? 'bg-primary-500/20 text-primary-500' : status === 'Pending' ? 'bg-accent-500/20 text-accent-500' : 'bg-secondary-500/20 text-secondary-500';
 
-const getStatusClass = (status) => {
-  switch (status) {
-    case 'Active': return 'bg-primary-500';
-    case 'Pending': return 'bg-accent-500';
-    case 'Completed': return 'bg-secondary-500';
-    default: return 'bg-text-muted';
-  }
-};
-
-const getStatusBadgeClass = (status) => {
-  switch (status) {
-    case 'Active': 
-      return 'bg-primary-500/20 text-primary-500';
-    case 'Pending': 
-      return 'bg-accent-500/20 text-accent-500';
-    case 'Completed': 
-      return 'bg-secondary-500/20 text-secondary-500';
-    default: 
-      return 'bg-text-muted/20 text-text-muted';
-  }
+const showTaskModal = (task) => {
+  selectedTask.value = task;
 };
 </script>
