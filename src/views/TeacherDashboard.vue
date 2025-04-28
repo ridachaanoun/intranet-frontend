@@ -60,7 +60,6 @@
         />
         <ClassroomStudents 
           v-if="activeSection === 'students'" 
-          :classrooms="classrooms"
           @assign-points="openAssignPointsModal"
           @mark-absence="openMarkAbsenceModal"
           class="fade-in" 

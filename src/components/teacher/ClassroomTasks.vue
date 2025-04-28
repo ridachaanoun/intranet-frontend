@@ -8,6 +8,7 @@
           <div class="relative">
             <select 
               v-model="selectedClassroomId" 
+              @change="handleClassroomChange"
               class="bg-background rounded-lg border border-background-element py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-primary-400 text-text-primary appearance-none"
             >
               <option v-for="classroom in classrooms" :key="classroom.id" :value="classroom.id">
@@ -49,9 +50,9 @@
               class="bg-background/20 backdrop-blur-sm text-text-primary rounded-full py-1 pl-4 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-white/50 appearance-none"
             >
               <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="completed">Completed</option>
-              <option value="upcoming">Upcoming</option>
+              <option value="Active">Active</option>
+              <option value="Completed">Completed</option>
+              <option value="Pending">Pending</option>
             </select>
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-text-primary/60">
               <i class="fas fa-chevron-down text-xs"></i>
@@ -60,7 +61,7 @@
         </div>
       </div>
       
-      <div v-if="selectedClassroom && tasks.length > 0" class="divide-y divide-background-light">
+      <div v-if="selectedClassroom && filteredTasks.length > 0" class="divide-y divide-background-light">
         <div 
           v-for="task in filteredTasks" 
           :key="task.id" 
@@ -133,79 +134,37 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
+import { useTeacherStore } from '@/stores/teacherStore';
 
-const props = defineProps({
-  classrooms: {
-    type: Array,
-    required: true
-  }
-});
-
-const emit = defineEmits(['create-task']);
+// Initialize teacher store
+const teacherStore = useTeacherStore();
 
 // State
-const selectedClassroomId = ref('');
 const searchQuery = ref('');
 const statusFilter = ref('all');
 
-// Mock tasks data - in a real app, this would come from an API
-const tasks = ref([
-  {
-    id: 1,
-    title: 'Complete JavaScript Basics',
-    description: 'Complete the exercises on variables, data types, and basic functions',
-    status: 'active',
-    due_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
-    submission_count: 12,
-    assignment_type: 'class',
-    assigned_students: []  // Will be populated based on selected classroom
-  },
-  {
-    id: 2,
-    title: 'Build a Simple Vue Component',
-    description: 'Create a reusable Vue component with props, emits, and slots',
-    status: 'upcoming',
-    due_date: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // 10 days from now
-    submission_count: 0,
-    assignment_type: 'students',
-    assigned_students: [
-      { id: 's-001', name: 'Ahmed Hassan' },
-      { id: 's-005', name: 'Layla Bennani' }
-    ]
-  },
-  {
-    id: 3,
-    title: 'CSS Flexbox Challenge',
-    description: 'Complete the flexbox layout challenges in the provided codepen',
-    status: 'completed',
-    due_date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-    submission_count: 18,
-    assignment_type: 'students',
-    assigned_students: [
-      { id: 's-003', name: 'Younes El Khalifi' }
-    ]
-  }
-]);
+// Get classrooms from teacherStore
+const classrooms = computed(() => teacherStore.classrooms);
 
-// Computed properties
-const selectedClassroom = computed(() => {
-  if (!selectedClassroomId.value && props.classrooms.length > 0) {
-    return props.classrooms[0];
-  }
-  return props.classrooms.find(classroom => classroom.id === selectedClassroomId.value);
+// Bind selectedClassroomId to the store's selectedClassroom
+const selectedClassroomId = computed({
+  get: () => teacherStore.selectedClassroom?.id || (classrooms.value.length > 0 ? classrooms.value[0].id : ''), // Default to first classroom
+  set: (value) => teacherStore.selectClassroom(value),
 });
 
-// Auto-select first classroom when available
-watch(() => props.classrooms, (newClassrooms) => {
-  if (newClassrooms.length > 0 && !selectedClassroomId.value) {
-    selectedClassroomId.value = newClassrooms[0].id;
-  }
-}, { immediate: true });
+// Use the store's selectedClassroom directly
+const selectedClassroom = computed(() => teacherStore.selectedClassroom);
 
+// Get tasks for the selected classroom
+const tasks = computed(() => {
+  return selectedClassroom.value?.tasks || [];
+});
+
+// Filtered tasks
 const filteredTasks = computed(() => {
   let result = tasks.value;
-  
+
   // Search filter
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
@@ -214,12 +173,12 @@ const filteredTasks = computed(() => {
              task.description.toLowerCase().includes(query);
     });
   }
-  
+
   // Status filter
   if (statusFilter.value !== 'all') {
     result = result.filter(task => task.status === statusFilter.value);
   }
-  
+
   return result;
 });
 
@@ -234,20 +193,20 @@ const formatDate = (date) => {
 
 const getStatusClass = (status) => {
   switch (status) {
-    case 'active': return 'bg-primary-500';
-    case 'upcoming': return 'bg-accent-500';
-    case 'completed': return 'bg-secondary-500';
+    case 'Active': return 'bg-primary-500';
+    case 'Pending': return 'bg-accent-500';
+    case 'Completed': return 'bg-secondary-500';
     default: return 'bg-text-muted';
   }
 };
 
 const getStatusBadgeClass = (status) => {
   switch (status) {
-    case 'active': 
+    case 'Active': 
       return 'bg-primary-500/20 text-primary-500';
-    case 'upcoming': 
+    case 'Pending': 
       return 'bg-accent-500/20 text-accent-500';
-    case 'completed': 
+    case 'Completed': 
       return 'bg-secondary-500/20 text-secondary-500';
     default: 
       return 'bg-text-muted/20 text-text-muted';
