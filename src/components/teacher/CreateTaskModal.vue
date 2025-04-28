@@ -135,15 +135,17 @@
         <button 
           @click="$emit('close')" 
           class="px-4 py-2 border border-background-element rounded-md hover:bg-surface-hover text-text-secondary transition-colors"
-        >
+          :disabled="loading"        
+          >
           Cancel
         </button>
         <button 
           @click="createTask" 
-          :disabled="!isFormValid"
-          :class="{'opacity-50 cursor-not-allowed': !isFormValid}"
+          :disabled="!isFormValid || loading"
+          :class="{'opacity-50 cursor-not-allowed': !isFormValid || loading}"
           class="bg-gradient-to-r from-accent-600 to-accent-700 text-white px-4 py-2 rounded-md hover:from-accent-700 hover:to-accent-800 transition-colors shadow-sm"
         >
+          <span v-if="loading" class="loader"></span> <!-- Add a loader here if needed -->
           Create Task
         </button>
       </div>
@@ -155,6 +157,7 @@
 import { defineEmits, ref, computed } from 'vue';
 import { useTeacherStore } from '@/stores/teacherStore';
 import api from '@/axios';
+import Swal from 'sweetalert2';
 
 const emit = defineEmits(['close', 'task-created']);
 
@@ -170,6 +173,7 @@ const points = ref(10);
 const taskType = ref('Assignment');
 const assignmentType = ref('class'); // 'class' or 'students'
 const selectedStudentIds = ref([]);
+const loading = ref(false); // Add loading state
 
 const classrooms = computed(() => teacherStore.classrooms);
 const selectedClassroom = computed(() => teacherStore.selectedClassroom);
@@ -227,6 +231,7 @@ const createTask = async () => {
   }
 
   try {
+    loading.value = true; // Set loading to true when starting the request
     const response = await api.post('/teacher/assign-task', payload);
 
     if (response.data.task) {
@@ -236,8 +241,23 @@ const createTask = async () => {
     if (response.data.invalid_students?.length) {
       console.warn('Invalid students:', response.data.invalid_students);
     }
+
+    // Show success message
+    Swal.fire({
+      icon: 'success',
+      title: 'Task Created',
+      text: 'The task has been created successfully.',
+    });
   } catch (error) {
     console.error('Error assigning task:', error);
+    // Show error message
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'There was an error creating the task. Please try again.',
+    });
+  } finally {
+    loading.value = false;
   }
 };
 </script>
