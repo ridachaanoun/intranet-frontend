@@ -106,21 +106,7 @@
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <button 
-                  v-if="absence.status === 'pending'" 
-                  @click="updateAbsenceStatus(absence, 'absences')" 
-                  class="text-secondary-400 hover:text-secondary-600 mr-2"
-                >
-                  <i class="fas fa-check mr-1"></i> Mark Absent
-                </button>
-                <button 
-                  v-if="absence.status === 'pending'" 
-                  @click="updateAbsenceStatus(absence, 'present')" 
-                  class="text-green-400 hover:text-green-600 mr-2"
-                >
-                  <i class="fas fa-check-circle mr-1"></i> Mark Present
-                </button>
-                <button class="text-accent-400 hover:text-accent-600">
+                <button class="text-accent-400 hover:text-accent-600" @click="showDetails(absence)">
                   <i class="fas fa-eye mr-1"></i> Details
                 </button>
               </td>
@@ -139,6 +125,14 @@
         </button>
       </div>
     </div>
+
+    <!-- Absence Details Modal -->
+    <AbsenceDetailsModal 
+      v-if="isModalOpen" 
+      :isOpen="isModalOpen" 
+      :absence="selectedAbsence" 
+      @close="isModalOpen = false" 
+    />
   </div>
 </template>
 
@@ -146,6 +140,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useTeacherStore } from '@/stores/teacherStore';
 import { useAbsenceStore } from '@/stores/absenceStore';
+import AbsenceDetailsModal from './AbsenceDetailsModal.vue';
 
 const teacherStore = useTeacherStore();
 const absenceStore = useAbsenceStore();
@@ -153,6 +148,8 @@ const absenceStore = useAbsenceStore();
 const selectedClassroomId = ref('');
 const dateFilter = ref('');
 const statusFilter = ref('all');
+const isModalOpen = ref(false);
+const selectedAbsence = ref(null);
 
 const classrooms = computed(() => teacherStore.classrooms);
 const absences = computed(() => absenceStore.absences[selectedClassroomId.value] || []);
@@ -186,9 +183,9 @@ const markAbsence = () => {
   console.log('Marking absence for classroom:', selectedClassroomId.value);
 };
 
-// Update absence status
-const updateAbsenceStatus = (absence, newStatus) => {
-  console.log(`Updating absence ${absence.id} to status: ${newStatus}`);
+const showDetails = (absence) => {
+  selectedAbsence.value = absence;
+  isModalOpen.value = true;
 };
 
 const formatDate = (dateString) => {
