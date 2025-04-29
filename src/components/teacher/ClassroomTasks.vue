@@ -125,6 +125,17 @@
               >
                 <i class="fas fa-users mr-1"></i> View Students
               </button>
+              <div class="relative">
+                <select 
+                  v-model="task.status" 
+                  @change="updateTaskStatus(task.id, task.status)"
+                  class="text-sm text-accent-500 hover:text-accent-700 flex items-center bg-background border border-background-element rounded px-2 py-1"
+                >
+                  <option value="Active">Active</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
@@ -157,6 +168,8 @@
 import { ref, computed } from 'vue';
 import { useTeacherStore } from '@/stores/teacherStore';
 import StudentModal from './StudentModal.vue'; // Import the modal component
+import Swal from 'sweetalert2';
+import api from '@/axios';
 
 const teacherStore = useTeacherStore();
 const searchQuery = ref('');
@@ -188,5 +201,23 @@ const getStatusBadgeClass = (status) => status === 'Active' ? 'bg-primary-500/20
 
 const showTaskModal = (task) => {
   selectedTask.value = task;
+};
+
+// Function to update task status
+const updateTaskStatus = async (taskId, status) => {
+  try {
+    teacherStore.updateTaskStatus(taskId, status);
+    const response = await api.put(`/tasks/${taskId}/status`, { status });
+
+  } catch (error) {
+    console.error('Error updating task status:', error);
+
+    // Show error alert using SweetAlert2
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Failed to update task status.',
+    });
+  }
 };
 </script>
