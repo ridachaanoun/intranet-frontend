@@ -114,6 +114,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useTeacherStore } from '@/stores/teacherStore';
 import { useUserStore } from '@/stores/userStore'; // Assuming you have this
+import { useAbsenceStore } from '@/stores/absenceStore'; // Import the absence store
 
 // Import components
 import TeacherOverview from '@/components/teacher/TeacherOverview.vue';
@@ -127,6 +128,7 @@ import ClassroomAbsences from '@/components/teacher/ClassroomAbsences.vue';
 // Initialize stores
 const teacherStore = useTeacherStore();
 const userStore = useUserStore();
+const absenceStore = useAbsenceStore(); // Initialize the absence store
 
 // Active section state
 const activeSection = ref('overview');
@@ -224,26 +226,24 @@ const openMarkAbsenceModal = (classroomId) => {
   showMarkAbsenceModal.value = true;
 };
 
-const handleAbsencesMarked = (absenceRecords) => {
-  // Store absences in localStorage for demo purposes
-  const storedAbsences = localStorage.getItem('teacherAbsences');
-  const absences = storedAbsences ? JSON.parse(storedAbsences) : [];
-  
-  // Add new absences
-  absences.push(...absenceRecords);
-  
-  // Save back to localStorage
-  localStorage.setItem('teacherAbsences', JSON.stringify(absences));
-  
+const handleAbsencesMarked = (addedAbsences) => {
+  // Save new absences to the absence store
+  addedAbsences.forEach(absence => {
+    if (!absenceStore.absences[absence.classroom_id]) {
+      absenceStore.absences[absence.classroom_id] = [];
+    }
+    absenceStore.absences[absence.classroom_id].push(absence);
+  });
+
   // Add to activity feed
-  const studentNames = absenceRecords.map(record => record.student_name).slice(0, 2);
-  const otherCount = absenceRecords.length > 2 ? absenceRecords.length - 2 : 0;
-  
+  const studentNames = addedAbsences.map(absence => absence.user.name).slice(0, 2);
+  const otherCount = addedAbsences.length > 2 ? addedAbsences.length - 2 : 0;
+
   let message = `Marked absence for <span class="font-medium">${studentNames.join(', ')}</span>`;
   if (otherCount > 0) {
     message += ` and ${otherCount} other${otherCount > 1 ? 's' : ''}`;
   }
-  
+
   recentActivities.value.unshift({
     id: Date.now(),
     type: 'absence',
@@ -252,9 +252,9 @@ const handleAbsencesMarked = (absenceRecords) => {
     iconColor: 'text-secondary-400',
     message: message
   });
-  
-  saveActivities();
-  showMarkAbsenceModal.value = false;
+
+  saveActivities(); // Save activities to localStorage
+  showMarkAbsenceModal.value = false; // Close the modal
 };
 
 const handleAbsenceUpdated = ({ absence, newStatus }) => {
