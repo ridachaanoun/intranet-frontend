@@ -8,7 +8,9 @@
         <div class="flex justify-between items-center mb-6">
           <h1 class="text-2xl font-bold text-text-primary">{{ sectionTitle }}</h1>
           <div class="flex items-center space-x-4">
-            <button class="btn-primary">
+            <button class="btn-primary" 
+              @click="showCreateTaskModal = true"
+            >
               <i class="fas fa-plus mr-2"></i> New Task
             </button>
           </div>
@@ -57,6 +59,7 @@
           v-if="activeSection === 'overview'" 
           :recentActivities="recentActivities"
           class="fade-in"
+          @create-task="showCreateTaskModal = true" 
         />
         <ClassroomStudents 
           v-if="activeSection === 'students'" 

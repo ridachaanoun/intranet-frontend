@@ -82,7 +82,9 @@
       <div class="bg-surface rounded-lg shadow-card p-4">
         <h3 class="font-medium text-text-primary mb-4">Quick Actions</h3>
         <div class="grid grid-cols-2 gap-3">
-          <button class="flex flex-col items-center justify-center p-3 bg-background-element rounded-lg hover:bg-surface-hover transition-colors">
+          <button class="flex flex-col items-center justify-center p-3 bg-background-element rounded-lg hover:bg-surface-hover transition-colors"
+            @click="emit('create-task')"
+          >
             <i class="fas fa-clipboard-list text-primary-400 text-xl mb-2"></i>
             <span class="text-sm text-text-secondary">New Task</span>
           </button>
@@ -125,6 +127,7 @@ const props = defineProps({
     default: () => []
   }
 });
+const emit = defineEmits(['create-task']);
 
 const teacherStore = useTeacherStore();
 const classrooms = computed(() => teacherStore.classrooms);

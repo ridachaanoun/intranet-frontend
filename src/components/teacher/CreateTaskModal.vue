@@ -143,10 +143,11 @@
           @click="createTask" 
           :disabled="!isFormValid || loading"
           :class="{'opacity-50 cursor-not-allowed': !isFormValid || loading}"
-          class="bg-gradient-to-r from-accent-600 to-accent-700 text-white px-4 py-2 rounded-md hover:from-accent-700 hover:to-accent-800 transition-colors shadow-sm"
+          class="px-4 py-2 rounded-lg bg-accent-600 hover:bg-accent-700 text-white transition-colors flex items-center justify-center"
         >
-          <span v-if="loading" class="loader"></span> <!-- Add a loader here if needed -->
-          Create Task
+          <span v-if="loading" class="loader mr-2"></span>
+          <span v-if="!loading">Create Task</span>
+          <span v-else>Loading...</span>
         </button>
       </div>
     </div>
@@ -262,4 +263,20 @@ const createTask = async () => {
 };
 </script>
 
+<style scoped>
+
+.loader {
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
 
