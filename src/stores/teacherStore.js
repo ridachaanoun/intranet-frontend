@@ -95,5 +95,15 @@ export const useTeacherStore = defineStore('teacher', {
     selectClassroom(classroomId) {
       this.selectedClassroom = this.classrooms.find(c => c.id === classroomId) || null;
     },
+
+    // Add this method to your store
+    updateTaskStatus(taskId, status) {
+      if (this.selectedClassroom) {
+        const taskIndex = this.selectedClassroom.tasks.findIndex(task => task.id === taskId);
+        if (taskIndex !== -1) {
+          this.selectedClassroom.tasks[taskIndex].status = status;
+        }
+      }
+    }
   }
 });
