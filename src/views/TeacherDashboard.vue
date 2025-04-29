@@ -74,7 +74,6 @@
         />
         <ClassroomAbsences 
           v-if="activeSection === 'absences'" 
-          :classrooms="classrooms"
           @mark-absence="openMarkAbsenceModal"
           @update-absence="handleAbsenceUpdated"
           class="fade-in" 
