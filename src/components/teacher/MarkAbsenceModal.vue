@@ -52,6 +52,19 @@
             </div>
           </div>
           
+          <!-- Status Selection -->
+          <div>
+            <label class="block text-sm font-medium text-text-secondary mb-1">Status</label>
+            <select 
+              v-model="status"
+              class="w-full px-4 py-2 bg-background border border-background-element rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary-400 text-text-primary"
+            >
+              <option value="Panding">Panding</option>
+              <option value="Present">Present</option>
+              <option value="Absences">Absences</option>
+            </select>
+          </div>
+          
           <!-- Students Selection -->
           <div class="border border-background-element rounded-lg p-4 bg-background/50">
             <div class="flex justify-between items-center mb-2">
@@ -131,6 +144,7 @@
 
 <script setup>
 import { defineProps, defineEmits, ref, computed, watch } from 'vue';
+import api from '@/axios';
 
 const props = defineProps({
   classrooms: {
@@ -149,6 +163,7 @@ const emit = defineEmits(['close', 'absences-marked']);
 const absenceDate = ref(new Date().toISOString().split('T')[0]); // Today's date as default
 const classroomId = ref(props.preSelectedClassroomId || '');
 const session = ref('morning');
+const status = ref('Panding'); // Default status
 const selectedStudentIds = ref([]);
 const availableStudents = ref([]);
 const note = ref('');
@@ -193,33 +208,47 @@ const isFormValid = computed(() => {
   return absenceDate.value && 
          classroomId.value && 
          session.value && 
+         status.value && 
          selectedStudentIds.value.length > 0;
 });
 
-
-const saveAbsences = () => {
+// Save absences to the API
+const saveAbsences = async () => {
   if (!isFormValid.value) return;
-  
+
   const selectedClassroom = props.classrooms.find(c => c.id === classroomId.value);
-  
+
   // Create absence records for each selected student
   const absenceRecords = selectedStudentIds.value.map(studentId => {
     const student = availableStudents.value.find(s => s.id === studentId);
     return {
       date: absenceDate.value,
-      classroom: selectedClassroom.name,
+      class: selectedClassroom.name,
       classroom_id: classroomId.value,
       session: session.value,
       user_id: studentId,
-      student_name: student?.name || 'Unknown Student',
-      status: 'pending',
-      note: note.value || null,
-      created_at: new Date()
+      status: status.value, // Use the selected status
+      reason: note.value || null
     };
   });
-  
-  // Emit event with absence records
-  emit('absences-marked', absenceRecords);
+
+  try {
+    // Send each absence record to the API
+    const responses = await Promise.all(
+      absenceRecords.map(record => api.post('/teacher/absences', record))
+    );
+
+    // Extract the added absences from the responses
+    const addedAbsences = responses.map(response => response.data.absence);
+
+    // Emit the added absences to the parent component
+    emit('absences-marked', addedAbsences);
+
+    // Close the modal
+    emit('close');
+  } catch (error) {
+    console.error('Error marking absences:', error);
+  }
 };
 </script>
 

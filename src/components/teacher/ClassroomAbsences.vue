@@ -142,6 +142,8 @@ import { useTeacherStore } from '@/stores/teacherStore';
 import { useAbsenceStore } from '@/stores/absenceStore';
 import AbsenceDetailsModal from './AbsenceDetailsModal.vue';
 
+const emit = defineEmits(['mark-absence']);
+
 const teacherStore = useTeacherStore();
 const absenceStore = useAbsenceStore();
 
@@ -181,6 +183,7 @@ const loadAbsences = async () => {
 // Mark a new absence
 const markAbsence = () => {
   console.log('Marking absence for classroom:', selectedClassroomId.value);
+  emit('mark-absence')
 };
 
 const showDetails = (absence) => {
@@ -196,8 +199,9 @@ const formatDate = (dateString) => {
 // Get badge class for session
 const getSessionBadgeClass = (session) => {
   switch (session) {
-    case 'morning': return 'bg-blue-500/20 text-blue-600';
-    case 'afternoon': return 'bg-purple-500/20 text-purple-600';
+    case 'morning': return 'bg-emerald-500/20 text-emerald-600';
+    case 'afternoon': return 'bg-blue-500/20 text-blue-600';
+    case 'full-day': return 'bg-red-500/20 text-red-600';
     default: return 'bg-gray-500/20 text-gray-600';
   }
 };
