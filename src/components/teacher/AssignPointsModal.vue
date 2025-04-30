@@ -18,7 +18,7 @@
           </div>
           <div>
             <div class="font-medium text-text-primary">{{ student.name }}</div>
-            <div class="text-sm text-text-secondary">Current Points: {{ student.points || 0 }}</div>
+            <div class="text-sm text-text-secondary">Current Points: {{ student.total_points || 0 }}</div>
           </div>
         </div>
         
@@ -93,6 +93,7 @@
 
 <script setup>
 import { defineProps, defineEmits, ref, computed } from 'vue';
+import api from '@/axios';
 
 const props = defineProps({
   student: {
@@ -116,17 +117,27 @@ const isFormValid = computed(() => {
 });
 
 // Submit the form
-const assignPoints = () => {
+const assignPoints = async () => {
   if (!isFormValid.value) return;
-  
+
   const finalReason = reason.value === 'Other' ? customReason.value : reason.value;
-  
-  emit('points-assigned', {
-    student: props.student,
+
+  const payload = {
+    student_id: props.student.id,
     points: pointsToAdd.value,
-    reason: finalReason,
-    note: note.value,
-    timestamp: new Date()
-  });
+    reason: reason.value,
+    custom_reason: reason.value === 'Other' ? customReason.value : null,
+    note: note.value || null
+  };
+
+  try {
+    const response = await api.post('/teacher/assign-points', payload);
+
+    emit('points-assigned',{...response.data.point,name: props.student.name});
+
+    emit('close');
+  } catch (error) {
+    console.error('Error assigning points:', error);
+  }
 };
 </script>
