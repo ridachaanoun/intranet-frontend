@@ -1,7 +1,7 @@
 <template>
     <div class="divide-y divide-background-light">
       <div 
-        v-for="activity in activities" 
+        v-for="activity in visibleActivities" 
         :key="activity.id" 
         class="flex items-center px-6 py-4 hover:bg-surface-hover transition-colors"
       >
@@ -22,19 +22,42 @@
           <p>No recent activity</p>
         </div>
       </div>
+
+    <!-- Show All Button -->
+    <div v-if="activities.length > 15" class="flex justify-center p-4">
+      <button 
+        @click="toggleShowAll" 
+        class="text-secondary-500 hover:text-secondary-700 font-medium"
+      >
+        {{ showAll ? 'Show Less' : 'Show All' }}
+      </button>
+      </div>
     </div>
   </template>
-  
-  <script setup>
-  import { computed } from 'vue';
 
-  defineProps({
+  <script setup>
+  import { ref, computed } from 'vue';
+
+  const props =  defineProps({
     activities: {
       type: Array,
       default: () => []
     }
   });
 
+const showAll = ref(false);
+
+// Computed property to determine visible activities
+const visibleActivities = computed(() => {
+  return showAll.value ?props.activities : props.activities.slice(0, 5);
+});
+
+// Toggle the showAll state
+const toggleShowAll = () => {
+  showAll.value = !showAll.value;
+};
+
+// Format timestamps to "time ago" format
   function formatAgo(timestamp) {
     const now = Date.now();
     const diff = Math.floor((now - new Date(timestamp)) / 1000);
