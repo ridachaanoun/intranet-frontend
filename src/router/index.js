@@ -11,7 +11,7 @@ import classroom from '@/views/ClassroomView.vue'
 import TeacherDashboard from '@/views/TeacherDashboard.vue'
 import { useUserStore } from '@/stores/userStore'
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes: [
     {
       path: '/',
@@ -92,8 +92,16 @@ router.beforeEach(async (to, from, next) => {
     // Redirect to login if not authenticated
     next({ name: 'login' });
   } else {
-    // Allow access if authenticated
+
+    if (to.name === 'AdminDashboard' && userStore.user.role !== 'admin') {
+      next({ name: 'home' });
+    }
+    else if (to.name === 'TeacherDashboard' && userStore.user.role !== 'teacher') {
+      next({ name: 'home' });
+    } else {
+    // Allow access if authenticated and authorized
     next();
+    }
   }
 });
 
