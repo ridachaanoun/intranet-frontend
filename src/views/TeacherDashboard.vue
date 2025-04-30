@@ -75,7 +75,6 @@
         <ClassroomAbsences 
           v-if="activeSection === 'absences'" 
           @mark-absence="openMarkAbsenceModal"
-          @update-absence="handleAbsenceUpdated"
           class="fade-in" 
         />
 
@@ -184,15 +183,30 @@ const closeAssignPointsModal = () => {
 };
 
 const handlePointsAssigned = (data) => {
+  // Update the student's total points in the teacherStore
+  const classroom = teacherStore.classrooms.find(classroom =>
+    classroom.students.some(student => student.id === data.student_id)
+  );
+
+  if (classroom) {
+    const student = classroom.students.find(student => student.id === data.student_id);
+    if (student) {
+      student.total_points = (student.total_points || 0) + parseInt(data.points, 10);
+    }
+  }
   recentActivities.value.unshift({
     id: Date.now(),
     type: 'points',
     icon: 'fas fa-star',
     iconBg: 'bg-accent-500/20',
     iconColor: 'text-accent-400',
-    message: `Assigned ${data.points} points to <span class="font-medium">${data.student.name}</span>`,
+    message: `Assigned ${data.points} points to <span class="font-medium">${data.name}</span>`,
   });
+
+  // Save the updated activities to localStorage
   saveActivities();
+
+  // Close the modal
   closeAssignPointsModal();
 };
 
@@ -232,7 +246,7 @@ const handleAbsencesMarked = (addedAbsences) => {
     if (!absenceStore.absences[absence.classroom_id]) {
       absenceStore.absences[absence.classroom_id] = [];
     }
-    absenceStore.absences[absence.classroom_id].push(absence);
+    absenceStore.absences[absence.classroom_id].unshift(absence);
   });
 
   // Add to activity feed
@@ -256,23 +270,6 @@ const handleAbsencesMarked = (addedAbsences) => {
   saveActivities(); // Save activities to localStorage
   showMarkAbsenceModal.value = false; // Close the modal
 };
-
-const handleAbsenceUpdated = ({ absence, newStatus }) => {
-  // Add to activity feed
-  const statusText = newStatus === 'approved' ? 'Approved' : 'Rejected';
-  
-  recentActivities.value.unshift({
-    id: Date.now(),
-    type: 'absence-update',
-    icon: newStatus === 'approved' ? 'fas fa-check-circle' : 'fas fa-times-circle',
-    iconBg: newStatus === 'approved' ? 'bg-green-500/20' : 'bg-red-500/20',
-    iconColor: newStatus === 'approved' ? 'text-green-600' : 'text-red-600',
-    message: `${statusText} absence for <span class="font-medium">${absence.student_name}</span> on ${new Date(absence.date).toLocaleDateString()}`
-  });
-  
-  saveActivities();
-};
-
 const saveActivities = () => {
   localStorage.setItem('teacherRecentActivities', JSON.stringify(recentActivities.value));
 };
