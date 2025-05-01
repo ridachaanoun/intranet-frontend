@@ -173,39 +173,13 @@
           </div>
         </div>
       </div>
-      
-      <!-- Toast Notification -->
-      <div class="fixed top-4 right-4 z-50 space-y-2">
-        <div 
-          v-for="toast in toasts" 
-          :key="toast.id"
-          class="bg-surface rounded-lg shadow-card p-4 w-80 transform transition-all duration-300 flex"
-          :class="{
-            'border-l-4 border-green-500': toast.type === 'success',
-            'border-l-4 border-red-500': toast.type === 'error'
-          }"
-        >
-          <div class="mr-3">
-            <i 
-              class="fas fa-2x" 
-              :class="{
-                'fa-check-circle text-green-500': toast.type === 'success',
-                'fa-exclamation-circle text-red-500': toast.type === 'error'
-              }"
-            ></i>
-          </div>
-          <div class="flex-1">
-            <h4 class="font-medium text-text-primary">{{ toast.title }}</h4>
-            <p class="text-sm text-text-secondary">{{ toast.message }}</p>
-          </div>
-        </div>
-      </div>
     </div>
   </template>
 
   <script setup>
   import { ref, computed, onMounted } from 'vue';
   import { useMarketplaceStore } from '@/stores/marketplaceStore';
+  import Swal from 'sweetalert2';
 
   const marketplaceStore = useMarketplaceStore();
 
@@ -214,9 +188,8 @@
   const searchQuery = ref('');
   const selectedProduct = ref(null);
   const isPurchaseModalVisible = ref(false);
-  const toasts = ref([]);
-  let toastId = 0;
   const isLoadingMore = ref(false);
+
   // Computed properties
   const isLoading = computed(() => marketplaceStore.isLoading);
   const filteredProducts = computed(() => {
@@ -247,34 +220,52 @@
   function confirmPurchase() {
     if (userPoints.value >= selectedProduct.value.price) {
       userPoints.value -= selectedProduct.value.price;
-      showToast({
+      
+      // Styled success message
+      Swal.fire({
+        icon: 'success',
         title: 'Purchase Successful',
-        message: `You purchased ${selectedProduct.value.name} for ${selectedProduct.value.price} YC points!`,
-        type: 'success'
-      })
-      closePurchaseModal()
+        text: `You purchased ${selectedProduct.value.name} for ${selectedProduct.value.price} YC points!`,
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        iconColor: '#10b981',
+        customClass: {
+          popup: 'colored-toast',
+          title: 'toast-title',
+          timerProgressBar: 'timer-progress'
+        },
+        background: '#1e293b',
+        color: '#e2e8f0',
+        didOpen: (toast) => {
+          toast.querySelector('.timer-progress').style.background = '#10b981'
+        }
+      });
+      
+      closePurchaseModal();
     } else {
-      showToast({
+      // Styled error message
+      Swal.fire({
+        icon: 'error',
         title: 'Insufficient Points',
-        message: `You don't have enough YC points to purchase this item.`,
-        type: 'error'
-      })
+        text: `You don't have enough YC points to purchase this item.`,
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        iconColor: '#ef4444',
+        customClass: {
+          popup: 'colored-toast',
+          title: 'toast-title',
+          timerProgressBar: 'timer-progress'
+        },
+        background: '#1e293b',
+        color: '#e2e8f0'
+      });
     }
-  }
-
-  function showToast({ title, message, type = 'info', duration = 3000 }) {
-    const id = toastId++
-    
-    toasts.value.push({
-      id,
-      title,
-      message,
-      type
-    })
-    
-    setTimeout(() => {
-      toasts.value = toasts.value.filter(toast => toast.id !== id);
-    }, duration);
   }
 
   async function loadMoreProducts() {
@@ -284,10 +275,24 @@
       try {
         await marketplaceStore.fetchProducts(marketplaceStore.currentPage + 1);
       } catch (error) {
-        showToast({
-          title: 'Error',
-          message: 'Failed to load more products. Please try again.',
-          type: 'error'
+        // Styled error message
+        Swal.fire({
+          icon: 'error',
+          title: 'Error Loading Products',
+          text: 'Failed to load more products. Please try again.',
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          iconColor: '#ef4444', // Red color
+          customClass: {
+            popup: 'colored-toast',
+            title: 'toast-title',
+            timerProgressBar: 'timer-progress'
+          },
+          background: '#1e293b', // Dark background
+          color: '#e2e8f0' // Light text
         });
       } finally {
         isLoadingMore.value = false;
