@@ -1,6 +1,6 @@
 <template>
     <div>
-      <!-- Page Header with Points Display -->
+      <!-- Page Header with Points Display (only visible to students) -->
       <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
         <div class="relative">
           <h1 class="text-3xl font-bold bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent inline-block">
@@ -8,13 +8,19 @@
           </h1>
           <div class="h-1 bg-gradient-to-r from-primary-400 to-primary-600 rounded-full w-3/4 mt-1"></div>
         </div>
-        <div class="flex items-center space-x-3 mt-4 md:mt-0">
+        <div v-if="user.role === 'student'" class="flex items-center space-x-3 mt-4 md:mt-0">
           <div class="glass-effect rounded-full py-2 px-4 flex items-center shadow-glow">
             <i class="fas fa-coins text-yellow-500 mr-2"></i>
             <span class="text-text-secondary text-sm mr-2">Your Balance:</span>
             <span class="text-primary-400 font-medium text-lg">{{ userPoints }} YC</span>
           </div>
         </div>
+      </div>
+
+      <!-- Non-student message (only for admins and teachers) -->
+      <div v-if="user.role !== 'student'" class="bg-surface-hover p-4 rounded-xl mb-8 text-center">
+        <p class="text-text-secondary mb-2"><i class="fas fa-info-circle mr-2"></i> You are viewing the store as a {{ user.role }}.</p>
+        <p class="text-text-muted text-sm">Only students can make purchases in the store.</p>
       </div>
 
       <!-- Search Bar -->
@@ -46,7 +52,8 @@
           :key="product.id"
           class="bg-surface rounded-3xl overflow-hidden shadow-card hover:shadow-glow transition-all duration-300 transform hover:-translate-y-1"
         >
-          <a href="#" @click.prevent="showPurchaseModal(product)" class="block">
+          <!-- For students: clickable link to purchase -->
+          <a v-if="user.role === 'student'" href="#" @click.prevent="showPurchaseModal(product)" class="block">
             <div class="relative">
               <!-- Product Image -->
               <div class="w-full aspect-square overflow-hidden">
@@ -68,6 +75,30 @@
               </div>
             </div>
           </a>
+
+          <!-- For non-students: non-clickable display -->
+          <div v-else class="block">
+            <div class="relative">
+              <!-- Product Image -->
+              <div class="w-full aspect-square overflow-hidden">
+                <img 
+                  :src="product.image_url" 
+                  :alt="product.name" 
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <!-- Product Name -->
+              <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background-dark/90 to-transparent p-3">
+                <div class="text-white font-medium">{{ product.name }}</div>
+              </div>
+            </div>
+            <!-- Price -->
+            <div class="p-3 bg-surface-hover flex justify-center items-center">
+              <div class="text-primary-500 font-bold">
+                {{ product.price }} YC
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Empty State -->
@@ -102,9 +133,9 @@
         </button>
       </div>
       
-      <!-- Purchase Confirmation Modal -->
+      <!-- Purchase Confirmation Modal (only visible to students) -->
       <div 
-        v-if="isPurchaseModalVisible" 
+        v-if="isPurchaseModalVisible && user.role === 'student'" 
         class="fixed inset-0 flex items-center justify-center z-50 bg-background-dark/80 backdrop-blur-sm"
       >
         <div 
@@ -180,11 +211,14 @@
   import { ref, computed, onMounted } from 'vue';
   import { useMarketplaceStore } from '@/stores/marketplaceStore';
   import Swal from 'sweetalert2';
+  import { useUserStore } from '@/stores/userStore';
 
   const marketplaceStore = useMarketplaceStore();
-
+  const userStore = useUserStore();
+  const user = userStore.user;
+  
   // Reactive data
-  const userPoints = ref(2500);
+  const userPoints = ref(user.role === 'student' ? (user.Total_points || 0) : 0);
   const searchQuery = ref('');
   const selectedProduct = ref(null);
   const isPurchaseModalVisible = ref(false);
@@ -206,8 +240,25 @@
 
   // Methods
   function showPurchaseModal(product) {
-    selectedProduct.value = product
-    isPurchaseModalVisible.value = true
+    // Only allow students to purchase
+    if (user.role !== 'student') {
+      Swal.fire({
+        icon: 'info',
+        title: 'Access Restricted',
+        text: 'Only students can make purchases in the store.',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#1e293b',
+        color: '#e2e8f0'
+      });
+      return;
+    }
+    
+    selectedProduct.value = product;
+    isPurchaseModalVisible.value = true;
   }
 
   function closePurchaseModal() {
@@ -218,6 +269,12 @@
   }
 
   function confirmPurchase() {
+    // Only allow students to purchase
+    if (user.role !== 'student') {
+      closePurchaseModal();
+      return;
+    }
+    
     if (userPoints.value >= selectedProduct.value.price) {
       userPoints.value -= selectedProduct.value.price;
       
@@ -238,10 +295,7 @@
           timerProgressBar: 'timer-progress'
         },
         background: '#1e293b',
-        color: '#e2e8f0',
-        didOpen: (toast) => {
-          toast.querySelector('.timer-progress').style.background = '#10b981'
-        }
+        color: '#e2e8f0'
       });
       
       closePurchaseModal();
@@ -305,3 +359,35 @@
     marketplaceStore.fetchProducts();
   });
   </script>
+
+  <style>
+  /* Custom styles for SweetAlert2 toasts */
+  .colored-toast {
+    border-radius: 1rem !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    border-left: 4px solid;
+    padding: 1rem !important;
+  }
+
+  .colored-toast.swal2-icon-success {
+    border-color: #10b981 !important;
+  }
+
+  .colored-toast.swal2-icon-error {
+    border-color: #ef4444 !important;
+  }
+
+  .colored-toast.swal2-icon-info {
+    border-color: #3b82f6 !important;
+  }
+
+  .toast-title {
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .timer-progress {
+    background: rgba(255, 255, 255, 0.2) !important;
+  }
+  </style>
