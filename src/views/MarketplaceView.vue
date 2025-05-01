@@ -22,6 +22,15 @@
         <p class="text-text-secondary mb-2"><i class="fas fa-info-circle mr-2"></i> You are viewing the store as a {{ user.role }}.</p>
         <p class="text-text-muted text-sm">Only students can make purchases in the store.</p>
       </div>
+      <div v-if="user.role === 'admin'" class="flex justify-end mb-6">
+      <button 
+        @click="addProductModal = true"
+        class="px-5 py-2 bg-accent-500 text-white rounded-xl hover:bg-accent-600 transition-colors flex items-center space-x-2"
+      >
+        <i class="fas fa-plus mr-1"></i>
+        <span>Add Product</span>
+      </button>
+    </div>
 
       <!-- Search Bar -->
       <div class="bg-surface rounded-xl shadow-card p-6 mb-8 glass-effect">
@@ -213,6 +222,10 @@
         </div>
       </div>
     </div>
+    <AddProductModal v-if="addProductModal"
+      @close="addProductModal = false" 
+      @product-added="handleProductAdded"
+    />
   </template>
 
   <script setup>
@@ -221,6 +234,7 @@
   import Swal from 'sweetalert2';
   import { useUserStore } from '@/stores/userStore';
   import api from '@/axios';
+  import AddProductModal from '@/components/teacher/AddProductModal.vue';
 
   const marketplaceStore = useMarketplaceStore();
   const userStore = useUserStore();
@@ -233,6 +247,7 @@
   const selectedProduct = ref(null);
   const isPurchaseModalVisible = ref(false);
   const isLoadingMore = ref(false);
+  const addProductModal = ref(false);
 
   // Computed properties
   const isLoading = computed(() => marketplaceStore.isLoading);
@@ -396,6 +411,11 @@
   onMounted(() => {
     marketplaceStore.fetchProducts();
   });
+
+  function handleProductAdded(newProduct) {
+  marketplaceStore.products.unshift(newProduct);
+  addProductModal.value = false;
+}
   </script>
 
   <style>
