@@ -190,16 +190,24 @@
             <button 
               @click="closePurchaseModal" 
               class="flex-1 py-3 px-4 rounded-xl text-text-secondary bg-surface-hover hover:bg-surface-active transition-colors"
+              :disabled="isPurchaseLoading"
+              :class="{ 'opacity-50 cursor-not-allowed': isPurchaseLoading }"
             >
               Cancel
             </button>
             <button 
               @click="confirmPurchase" 
-              class="flex-1 py-3 px-4 rounded-xl text-white bg-primary-500 hover:bg-primary-600 transition-colors"
-              :disabled="userPoints < (selectedProduct?.price || 0)"
-              :class="{'opacity-50 cursor-not-allowed': userPoints < (selectedProduct?.price || 0)}"
+              class="flex-1 py-3 px-4 rounded-xl text-white bg-primary-500 hover:bg-primary-600 transition-colors flex items-center justify-center"
+              :disabled="userPoints < (selectedProduct?.price || 0) || isPurchaseLoading"
+              :class="{
+                'opacity-50 cursor-not-allowed': userPoints < (selectedProduct?.price || 0) || isPurchaseLoading
+              }"
             >
-              Confirm Purchase
+              <svg v-if="isPurchaseLoading" class="animate-spin h-5 w-5 text-white mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              <span>{{ isPurchaseLoading ? 'Processing...' : 'Confirm Purchase' }}</span>
             </button>
           </div>
         </div>
@@ -212,13 +220,15 @@
   import { useMarketplaceStore } from '@/stores/marketplaceStore';
   import Swal from 'sweetalert2';
   import { useUserStore } from '@/stores/userStore';
+  import api from '@/axios';
 
   const marketplaceStore = useMarketplaceStore();
   const userStore = useUserStore();
-  const user = userStore.user;
-  
+  const user = computed(()=>userStore.user);
+  const isPurchaseLoading = ref(false);
+
   // Reactive data
-  const userPoints = ref(user.role === 'student' ? (user.Total_points || 0) : 0);
+  const userPoints = ref(user.value.role === 'student' ? (user.value.Total_points || 0) : 0);
   const searchQuery = ref('');
   const selectedProduct = ref(null);
   const isPurchaseModalVisible = ref(false);
@@ -241,7 +251,7 @@
   // Methods
   function showPurchaseModal(product) {
     // Only allow students to purchase
-    if (user.role !== 'student') {
+    if (user.value.role !== 'student') {
       Swal.fire({
         icon: 'info',
         title: 'Access Restricted',
@@ -263,20 +273,26 @@
 
   function closePurchaseModal() {
     isPurchaseModalVisible.value = false
-    setTimeout(() => {
       selectedProduct.value = null
-    }, 300);
   }
 
-  function confirmPurchase() {
+  async function confirmPurchase() {
     // Only allow students to purchase
-    if (user.role !== 'student') {
+    if (user.value.role !== 'student') {
       closePurchaseModal();
       return;
     }
-    
+
     if (userPoints.value >= selectedProduct.value.price) {
-      userPoints.value -= selectedProduct.value.price;
+  try {
+    isPurchaseLoading.value = true;
+    // Make API call to save the purchase
+    const response = await api.post(`/products/${selectedProduct.value.id}/buy`);
+
+    // Check if the purchase was successful
+    if (response.data.message === 'Product purchased successfully') {
+      user.value.Total_points -= selectedProduct.value.price;
+      userPoints.value -= selectedProduct.value.price; 
       
       // Styled success message
       Swal.fire({
@@ -297,10 +313,32 @@
         background: '#1e293b',
         color: '#e2e8f0'
       });
-      
+
       closePurchaseModal();
+    }
+  } catch (error) {
+    // Handle API error
+    Swal.fire({
+      icon: 'error',
+      title: 'Purchase Failed',
+      text: 'An error occurred while processing your purchase. Please try again later.',
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      iconColor: '#ef4444',
+      customClass: {
+        popup: 'colored-toast',
+        title: 'toast-title',
+        timerProgressBar: 'timer-progress'
+      },
+      background: '#1e293b',
+      color: '#e2e8f0'
+    });
+  }
     } else {
-      // Styled error message
+      // Styled error message for insufficient points
       Swal.fire({
         icon: 'error',
         title: 'Insufficient Points',
