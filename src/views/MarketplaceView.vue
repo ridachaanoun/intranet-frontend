@@ -16,7 +16,7 @@
           </div>
         </div>
       </div>
-  
+
       <!-- Search Bar -->
       <div class="bg-surface rounded-xl shadow-card p-6 mb-8 glass-effect">
         <div class="relative">
@@ -31,9 +31,15 @@
           </button>
         </div>
       </div>
-  
+
       <!-- Product Grid -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div v-if="isLoading && marketplaceStore.products.length === 0" class="flex justify-center items-center h-64">
+        <svg class="animate-spin h-10 w-10 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+        </svg>
+      </div>
+      <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         <!-- Product Card -->
         <div 
           v-for="product in filteredProducts" 
@@ -45,7 +51,7 @@
               <!-- Product Image -->
               <div class="w-full aspect-square overflow-hidden">
                 <img 
-                  :src="product.image" 
+                  :src="product.image_url" 
                   :alt="product.name" 
                   class="w-full h-full object-cover"
                 />
@@ -63,10 +69,10 @@
             </div>
           </a>
         </div>
-  
+
         <!-- Empty State -->
         <div 
-          v-if="filteredProducts.length === 0" 
+          v-if="filteredProducts.length === 0 && !isLoading" 
           class="col-span-full py-16 flex flex-col items-center justify-center text-text-secondary"
         >
           <i class="fas fa-search text-4xl mb-4 text-text-muted"></i>
@@ -78,6 +84,16 @@
             Clear Search
           </button>
         </div>
+      </div>
+
+      <!-- Load More Button -->
+      <div v-if="marketplaceStore.currentPage < marketplaceStore.totalPages && !isLoading" class="flex justify-center mt-8">
+        <button 
+          @click="loadMoreProducts" 
+          class="px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+        >
+          Load More
+        </button>
       </div>
       
       <!-- Purchase Confirmation Modal -->
@@ -103,7 +119,7 @@
             <div class="flex items-center space-x-3">
               <div class="w-12 h-12 rounded-lg overflow-hidden">
                 <img 
-                  :src="selectedProduct?.image" 
+                  :src="selectedProduct?.image_url" 
                   :alt="selectedProduct?.name"
                   class="w-full h-full object-cover"
                 />
@@ -180,121 +196,50 @@
       </div>
     </div>
   </template>
-  
+
   <script setup>
-  import { ref, computed } from 'vue'
-  
+  import { ref, computed, onMounted } from 'vue';
+  import { useMarketplaceStore } from '@/stores/marketplaceStore';
+
+  const marketplaceStore = useMarketplaceStore();
+
   // Reactive data
-  const searchQuery = ref('')
-  const userPoints = ref(2500)
-  const isPurchaseModalVisible = ref(false)
-  const selectedProduct = ref(null)
-  const toasts = ref([])
-  let toastId = 0
-  
-  // Products data
-  const products = ref([
-    {
-      id: 1,
-      name: 'Souris',
-      price: 1100,
-      image: 'https://m.media-amazon.com/images/I/61UxfXTUyvL._AC_SL1500_.jpg',
-      description: 'Souris sans fil ergonomique'
-    },
-    {
-      id: 2,
-      name: 'Clavier',
-      price: 1500,
-      image: 'https://m.media-amazon.com/images/I/81yJGRUE2-L._AC_SL1500_.jpg',
-      description: 'Clavier mécanique RGB'
-    },
-    {
-      id: 3,
-      name: 'Casque',
-      price: 1800,
-      image: 'https://m.media-amazon.com/images/I/61CGHv6kmWL._AC_SL1000_.jpg',
-      description: 'Casque audio avec réduction de bruit'
-    },
-    {
-      id: 4,
-      name: 'Clé USB 64GB',
-      price: 900,
-      image: 'https://m.media-amazon.com/images/I/71nz3cIcFOL._AC_SL1500_.jpg',
-      description: 'Clé USB 3.0 avec 64GB de stockage'
-    },
-    {
-      id: 5,
-      name: 'Sac à dos',
-      price: 1700,
-      image: 'https://m.media-amazon.com/images/I/81oKhu+bENL._AC_SL1500_.jpg',
-      description: 'Sac à dos pour ordinateur portable'
-    },
-    {
-      id: 6,
-      name: 'Chargeur sans fil',
-      price: 1200,
-      image: 'https://m.media-amazon.com/images/I/61ERwd8NgfL._AC_SL1010_.jpg',
-      description: 'Chargeur sans fil rapide 15W'
-    },
-    {
-      id: 7,
-      name: 'Batterie externe',
-      price: 1600,
-      image: 'https://m.media-amazon.com/images/I/71r1iRFx3-L._AC_SL1500_.jpg',
-      description: 'Batterie externe 20000mAh'
-    },
-    {
-      id: 8,
-      name: 'Support téléphone',
-      price: 800,
-      image: 'https://m.media-amazon.com/images/I/51KvlJOOmDL._AC_SL1200_.jpg',
-      description: 'Support téléphone ajustable pour bureau'
-    },
-    {
-      id: 9,
-      name: 'T-shirt YouCode',
-      price: 1000,
-      image: 'https://m.media-amazon.com/images/I/61yhBkU3uRL._AC_SL1100_.jpg',
-      description: 'T-shirt à l\'effigie de YouCode'
-    },
-    {
-      id: 10,
-      name: 'Carnet de notes',
-      price: 600,
-      image: 'https://m.media-amazon.com/images/I/712aj2SrPVL._AC_SL1500_.jpg',
-      description: 'Carnet de notes premium'
-    }
-  ])
-  
+  const userPoints = ref(2500);
+  const searchQuery = ref('');
+  const selectedProduct = ref(null);
+  const isPurchaseModalVisible = ref(false);
+  const toasts = ref([]);
+  let toastId = 0;
   // Computed properties
+  const isLoading = computed(() => marketplaceStore.isLoading);
   const filteredProducts = computed(() => {
     if (!searchQuery.value) {
-      return products.value
+      return marketplaceStore.products
     }
-    
-    const query = searchQuery.value.toLowerCase()
-    return products.value.filter(product => 
+
+    const query = searchQuery.value.toLowerCase();
+    return marketplaceStore.products.filter(product => 
       product.name.toLowerCase().includes(query) || 
       product.description.toLowerCase().includes(query)
     )
   })
-  
+
   // Methods
   function showPurchaseModal(product) {
     selectedProduct.value = product
     isPurchaseModalVisible.value = true
   }
-  
+
   function closePurchaseModal() {
     isPurchaseModalVisible.value = false
     setTimeout(() => {
       selectedProduct.value = null
-    }, 300)
+    }, 300);
   }
-  
+
   function confirmPurchase() {
     if (userPoints.value >= selectedProduct.value.price) {
-      userPoints.value -= selectedProduct.value.price
+      userPoints.value -= selectedProduct.value.price;
       showToast({
         title: 'Purchase Successful',
         message: `You purchased ${selectedProduct.value.name} for ${selectedProduct.value.price} YC points!`,
@@ -309,7 +254,7 @@
       })
     }
   }
-  
+
   function showToast({ title, message, type = 'info', duration = 3000 }) {
     const id = toastId++
     
@@ -321,7 +266,18 @@
     })
     
     setTimeout(() => {
-      toasts.value = toasts.value.filter(toast => toast.id !== id)
-    }, duration)
+      toasts.value = toasts.value.filter(toast => toast.id !== id);
+    }, duration);
   }
+
+  function loadMoreProducts() {
+    if (marketplaceStore.currentPage < marketplaceStore.totalPages) {
+      marketplaceStore.fetchProducts(marketplaceStore.currentPage + 1);
+    }
+  }
+
+  // Fetch products on mount
+  onMounted(() => {
+    marketplaceStore.fetchProducts();
+  });
   </script>
