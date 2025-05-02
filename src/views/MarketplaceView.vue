@@ -96,8 +96,15 @@
                   class="w-full h-full object-cover"
                 />
               </div>
+              <button 
+                @click.stop="EditProduct(product)" 
+                class="text-primary-400 hover:text-primary-700 flex items-center text-sm absolute top-1 right-5"
+              >
+                <i class="fas fa-edit mr-1"></i>
+                <span>Edit</span>
+              </button>
               <!-- Product Name -->
-              <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background-dark/90 to-transparent p-3">
+              <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background-dark/90 to-transparent p-3 ">
                 <div class="text-white font-medium">{{ product.name }}</div>
               </div>
             </div>
@@ -226,6 +233,11 @@
       @close="addProductModal = false" 
       @product-added="handleProductAdded"
     />
+    <EditProductModal v-if="editProductModal"
+      @close="editProductModal = null" 
+      @product-edit="handleProductedited"
+      :product="editProductModal"
+    />
   </template>
 
   <script setup>
@@ -235,6 +247,7 @@
   import { useUserStore } from '@/stores/userStore';
   import api from '@/axios';
   import AddProductModal from '@/components/teacher/AddProductModal.vue';
+  import EditProductModal from '@/components/teacher/EditProductModal .vue';
 
   const marketplaceStore = useMarketplaceStore();
   const userStore = useUserStore();
@@ -248,6 +261,7 @@
   const isPurchaseModalVisible = ref(false);
   const isLoadingMore = ref(false);
   const addProductModal = ref(false);
+  const editProductModal = ref("");
 
   // Computed properties
   const isLoading = computed(() => marketplaceStore.isLoading);
@@ -416,6 +430,16 @@
   marketplaceStore.products.unshift(newProduct);
   addProductModal.value = false;
 }
+  function handleProductedited(newProduct) {
+    const pix= marketplaceStore.products.findIndex(product => product.id === newProduct.id);
+    marketplaceStore.products[pix] = newProduct;
+    editProductModal.value = null;
+ };
+  function EditProduct(pro){
+    editProductModal.value = pro;
+    console.log(editProductModal);
+    
+  }  
   </script>
 
   <style>
