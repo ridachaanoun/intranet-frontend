@@ -26,9 +26,9 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <div 
                 :class="{
-                  'text-yellow-500 bg-yellow-100': absence.status === 'panding',
+                  'text-yellow-500 bg-yellow-100': absence.status === 'Panding',
                   'text-green-500 bg-green-100': absence.status === 'Present',
-                  'text-red-500 bg-red-100': absence.status === 'Absent'
+                  'text-red-500 bg-red-100': absence.status === 'Absences'
                 }" 
                 class="px-2 py-0.5 text-xs font-medium rounded-full inline-block"
               >
@@ -36,8 +36,20 @@
               </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-text-primary">{{ absence.class }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-primary">{{ absence.session }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-primary">{{ absence.confirmed_by || '-' }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span 
+                class="px-3 py-1 text-xs font-medium rounded-full inline-block border"
+                :class="{
+                  'bg-blue-100/10 text-blue-400 border-blue-400/20': absence.session === 'morning',
+                  'bg-orange-100/10 text-orange-400 border-orange-400/20': absence.session === 'afternoon',
+                  'bg-purple-100/10 text-purple-400 border-purple-400/20': absence.session === 'full-day',
+                  'bg-primary-100/10 text-primary-400 border-primary-400/20': !['morning', 'afternoon', 'full-day'].includes(absence.session)
+                }"
+              >
+                {{ absence.session }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-primary"> - </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">{{ absence.reason || '-' }}</td>
           </tr>
         </tbody>
