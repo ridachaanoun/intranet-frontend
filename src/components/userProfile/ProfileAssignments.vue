@@ -21,11 +21,11 @@
         
         <div class="flex items-center">
           <div class="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
-            <i class="fas fa-paper-plane text-white"></i>
+            <i class="fas fa-play-circle text-white"></i>
           </div>
           <div class="ml-3">
-            <div class="text-xs text-white/70">Submitted</div>
-            <div class="font-bold">{{ getSubmittedCount() }}</div>
+            <div class="text-xs text-white/70">Active</div>
+            <div class="font-bold">{{ getActiveCount() }}</div>
           </div>
         </div>
         
@@ -34,8 +34,8 @@
             <i class="fas fa-check-circle text-white"></i>
           </div>
           <div class="ml-3">
-            <div class="text-xs text-white/70">Graded</div>
-            <div class="font-bold">{{ getGradedCount() }}</div>
+            <div class="text-xs text-white/70">Completed</div>
+            <div class="font-bold">{{ getCompletedCount() }}</div>
           </div>
         </div>
       </div>
@@ -52,8 +52,8 @@
         <div 
           :class="{
             'bg-yellow-500': assignment.status === 'Pending',
-            'bg-blue-500': assignment.status === 'Submitted',
-            'bg-green-500': assignment.status === 'Graded'
+            'bg-blue-500': assignment.status === 'Active',
+            'bg-green-500': assignment.status === 'Completed'
           }" 
           class="absolute left-0 top-0 bottom-0 w-1"
         ></div>
@@ -64,16 +64,16 @@
             <div 
               :class="{
                 'bg-yellow-100 text-yellow-600': assignment.status === 'Pending',
-                'bg-blue-100 text-blue-600': assignment.status === 'Submitted',
-                'bg-green-100 text-green-600': assignment.status === 'Graded'
+                'bg-blue-100 text-blue-600': assignment.status === 'Active',
+                'bg-green-100 text-green-600': assignment.status === 'Completed'
               }" 
               class="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm"
             >
               <i 
                 :class="{
                   'fas fa-calendar-alt': assignment.status === 'Pending',
-                  'fas fa-paper-plane': assignment.status === 'Submitted',
-                  'fas fa-check-circle': assignment.status === 'Graded'
+                  'fas fa-play': assignment.status === 'Active',
+                  'fas fa-check-circle': assignment.status === 'Completed'
                 }" 
                 class="text-xl"
               ></i>
@@ -89,8 +89,8 @@
               <div 
                 :class="{
                   'border-yellow-200 bg-yellow-50 text-yellow-700': assignment.status === 'Pending',
-                  'border-blue-200 bg-blue-50 text-blue-700': assignment.status === 'Submitted',
-                  'border-green-200 bg-green-50 text-green-700': assignment.status === 'Graded'
+                  'border-blue-200 bg-blue-50 text-blue-700': assignment.status === 'Active',
+                  'border-green-200 bg-green-50 text-green-700': assignment.status === 'Completed'
                 }" 
                 class="px-2.5 py-1 text-xs font-medium rounded-md border"
               >
@@ -103,37 +103,37 @@
             <!-- Assignment metadata -->
             <div class="flex flex-wrap gap-x-6 gap-y-3 text-sm">
               <router-link 
-          :to="`/profile/${assignment.assigned_by.id}`" 
-          class="flex items-center text-text-secondary hover:bg-surface-hover p-2 rounded-lg transition-colors"
-          >
-          <div class="flex items-center">
-            <img 
-            :src="assignment.assigned_by.image_url" 
-            :alt="assignment.assigned_by.name"
-            class="w-8 h-8 rounded-full object-cover mr-2"
-            />
-            <div class="flex flex-col">
-            <span class="font-medium">{{ assignment.assigned_by.name }}</span>
-            <span class="text-xs text-text-secondary">{{ assignment.assigned_by.role }}</span>
-            </div>
-          </div>
-          </router-link>
+                :to="`/profile/${assignment.assigned_by.id}`" 
+                class="flex items-center text-text-secondary hover:bg-surface-hover p-2 rounded-lg transition-colors"
+              >
+                <div class="flex items-center">
+                  <img 
+                    :src="assignment.assigned_by.image_url" 
+                    :alt="assignment.assigned_by.name"
+                    class="w-8 h-8 rounded-full object-cover mr-2"
+                  />
+                  <div class="flex flex-col">
+                    <span class="font-medium">{{ assignment.assigned_by.name }}</span>
+                    <span class="text-xs text-text-secondary">{{ assignment.assigned_by.role }}</span>
+                  </div>
+                </div>
+              </router-link>
               
               <div 
                 class="flex items-center text-text-secondary"
-                :class="{ 'text-red-600': isOverdue(assignment.due_date) }"
+                :class="{ 'text-red-600': isOverdue(assignment.due_date) && assignment.status === 'Pending' }"
               >
                 <div 
                   class="w-8 h-8 rounded-full bg-surface-hover flex items-center justify-center mr-2"
-                  :class="{ 'bg-red-100': isOverdue(assignment.due_date) }"
+                  :class="{ 'bg-red-100': isOverdue(assignment.due_date) && assignment.status === 'Pending' }"
                 >
                   <i 
                     class="fas fa-clock text-primary-500"
-                    :class="{ 'text-red-500': isOverdue(assignment.due_date) }"
+                    :class="{ 'text-red-500': isOverdue(assignment.due_date) && assignment.status === 'Pending' }"
                   ></i>
                 </div>
                 <span>
-                  {{ isOverdue(assignment.due_date) ? 'Overdue: ' : 'Due: ' }}
+                  {{ isOverdue(assignment.due_date) && assignment.status === 'Pending' ? 'Overdue: ' : 'Due: ' }}
                   {{ formatDate(assignment.due_date) }}
                 </span>
               </div>
@@ -179,19 +179,20 @@
         </p>
       </div>
     </div>
-    <!-- </div> -->
+    
     <div v-else-if="fitchtasks()" class="flex items-center justify-center py-20">
       <svg class="animate-spin h-8 w-8 text-primary-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
     </div>
-  </div>
-     <!-- Footer -->
-     <div class="px-6 py-3 bg-surface-hover border-t border-surface-hover flex justify-between items-center text-xs text-text-secondary">
+    
+    <!-- Footer -->
+    <div class="px-6 py-3 bg-surface-hover border-t border-surface-hover flex justify-between items-center text-xs text-text-secondary">
       <span>@{{ user?.name }}</span>
       <span>Showing {{ assignments.length }} assignment{{ assignments.length !== 1 ? 's' : '' }}</span>
     </div>
+  </div>
 </template>
 
 <script setup>
@@ -207,6 +208,7 @@ const props = defineProps({
     required: true
   }
 })
+
 // Fetch assignments
 async function fitchtasks() {
   try {
@@ -243,12 +245,12 @@ function getPendingCount() {
   return assignments.value.filter(a => a.status === 'Pending').length
 }
 
-function getSubmittedCount() {
-  return assignments.value.filter(a => a.status === 'Submitted').length
+function getCompletedCount() {
+  return assignments.value.filter(a => a.status === 'Completed').length
 }
 
-function getGradedCount() {
-  return assignments.value.filter(a => a.status === 'Graded').length
+function getActiveCount() {
+  return assignments.value.filter(a => a.status === 'Active').length
 }
 </script>
 
