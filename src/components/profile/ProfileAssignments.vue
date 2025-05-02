@@ -21,11 +21,11 @@
         
         <div class="flex items-center">
           <div class="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
-            <i class="fas fa-paper-plane text-white"></i>
+            <i class="fas fa-play-circle text-white"></i>
           </div>
           <div class="ml-3">
-            <div class="text-xs text-white/70">Submitted</div>
-            <div class="font-bold">{{ getSubmittedCount() }}</div>
+            <div class="text-xs text-white/70">Active</div>
+            <div class="font-bold">{{ getActiveCount() }}</div>
           </div>
         </div>
         
@@ -34,8 +34,8 @@
             <i class="fas fa-check-circle text-white"></i>
           </div>
           <div class="ml-3">
-            <div class="text-xs text-white/70">Graded</div>
-            <div class="font-bold">{{ getGradedCount() }}</div>
+            <div class="text-xs text-white/70">Completed</div>
+            <div class="font-bold">{{ getCompletedCount() }}</div>
           </div>
         </div>
       </div>
@@ -52,8 +52,8 @@
         <div 
           :class="{
             'bg-yellow-500': assignment.status === 'Pending',
-            'bg-blue-500': assignment.status === 'Submitted',
-            'bg-green-500': assignment.status === 'Graded'
+            'bg-blue-500': assignment.status === 'Active',
+            'bg-green-500': assignment.status === 'Completed'
           }" 
           class="absolute left-0 top-0 bottom-0 w-1"
         ></div>
@@ -64,16 +64,16 @@
             <div 
               :class="{
                 'bg-yellow-100 text-yellow-600': assignment.status === 'Pending',
-                'bg-blue-100 text-blue-600': assignment.status === 'Submitted',
-                'bg-green-100 text-green-600': assignment.status === 'Graded'
+                'bg-blue-100 text-blue-600': assignment.status === 'Active',
+                'bg-green-100 text-green-600': assignment.status === 'Completed'
               }" 
               class="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm"
             >
               <i 
                 :class="{
                   'fas fa-calendar-alt': assignment.status === 'Pending',
-                  'fas fa-paper-plane': assignment.status === 'Submitted',
-                  'fas fa-check-circle': assignment.status === 'Graded'
+                  'fas fa-play': assignment.status === 'Active',
+                  'fas fa-check-circle': assignment.status === 'Completed'
                 }" 
                 class="text-xl"
               ></i>
@@ -89,8 +89,8 @@
               <div 
                 :class="{
                   'border-yellow-200 bg-yellow-50 text-yellow-700': assignment.status === 'Pending',
-                  'border-blue-200 bg-blue-50 text-blue-700': assignment.status === 'Submitted',
-                  'border-green-200 bg-green-50 text-green-700': assignment.status === 'Graded'
+                  'border-blue-200 bg-blue-50 text-blue-700': assignment.status === 'Active',
+                  'border-green-200 bg-green-50 text-green-700': assignment.status === 'Completed'
                 }" 
                 class="px-2.5 py-1 text-xs font-medium rounded-md border"
               >
@@ -239,15 +239,15 @@ function isOverdue(dateString) {
 }
 
 function getPendingCount() {
-  return assignments.value.filter(a => a.status === 'Pending').length
+  return assignments.value.filter(a => a.status === 'Pending').length;
 }
 
-function getSubmittedCount() {
-  return assignments.value.filter(a => a.status === 'Submitted').length
+function getActiveCount() {
+  return assignments.value.filter(a => a.status === 'Active').length;
 }
 
-function getGradedCount() {
-  return assignments.value.filter(a => a.status === 'Graded').length
+function getCompletedCount() {
+  return assignments.value.filter(a => a.status === 'Completed').length;
 }
 </script>
 
