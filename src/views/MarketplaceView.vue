@@ -96,13 +96,23 @@
                   class="w-full h-full object-cover"
                 />
               </div>
-              <button 
-                @click.stop="EditProduct(product)" 
-                class="text-primary-400 hover:text-primary-700 flex items-center text-sm absolute top-1 right-5"
-              >
-                <i class="fas fa-edit mr-1"></i>
-                <span>Edit</span>
-              </button>
+              <!-- Admin Actions -->
+              <div v-if="user.role === 'admin'" class="absolute top-1 right-1 flex gap-2">
+                <button 
+                  @click.stop="EditProduct(product)" 
+                  class="text-primary-400 hover:text-primary-700 flex items-center text-sm bg-surface-hover/80 backdrop-blur-sm p-1 rounded-lg"
+                >
+                  <i class="fas fa-edit mr-1"></i>
+                  <span>Edit</span>
+                </button>
+                <button 
+                  @click.stop="confirmDeleteProduct(product)" 
+                  class="text-red-400 hover:text-red-700 flex items-center text-sm bg-surface-hover/80 backdrop-blur-sm p-1 rounded-lg"
+                >
+                  <i class="fas fa-trash-alt mr-1"></i>
+                  <span>Delete</span>
+                </button>
+              </div>
               <!-- Product Name -->
               <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background-dark/90 to-transparent p-3 ">
                 <div class="text-white font-medium">{{ product.name }}</div>
@@ -439,7 +449,92 @@
     editProductModal.value = pro;
     console.log(editProductModal);
     
-  }  
+  } 
+
+  async function confirmDeleteProduct(product) {
+  const result = await Swal.fire({
+    title: 'Delete Product',
+    text: `Are you sure you want to delete "${product.name}"? This action cannot be undone.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ef4444',
+    cancelButtonColor: '#64748b',
+    confirmButtonText: 'Yes, delete it',
+    background: '#1e293b',
+    color: '#e2e8f0',
+    customClass: {
+      confirmButton: 'p-2',
+      cancelButton: 'p-2'
+    }
+  });
+
+  if (result.isConfirmed) {
+    await deleteProduct(product);
+  }
+}
+
+async function deleteProduct(product) {
+  try {
+    // Show loading state
+    Swal.fire({
+      title: 'Deleting...',
+      text: 'Please wait while we delete the product.',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      willOpen: () => {
+        Swal.showLoading()
+      },
+      background: '#1e293b',
+      color: '#e2e8f0'
+    });
+
+    await api.delete(`/products/${product.id}`);
+
+    marketplaceStore.products = marketplaceStore.products.filter(p => p.id !== product.id);
+
+    // Show success message
+    Swal.fire({
+      icon: 'success',
+      title: 'Product Deleted',
+      text: `"${product.name}" has been deleted successfully.`,
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      iconColor: '#10b981',
+      customClass: {
+        popup: 'colored-toast',
+        title: 'toast-title',
+        timerProgressBar: 'timer-progress'
+      },
+      background: '#1e293b',
+      color: '#e2e8f0'
+    });
+  } catch (error) {
+    console.error('Error deleting product:', error);
+
+    // Show error message
+    Swal.fire({
+      icon: 'error',
+      title: 'Delete Failed',
+      text: error.response?.data?.message || 'Failed to delete the product. Please try again.',
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      iconColor: '#ef4444',
+      customClass: {
+        popup: 'colored-toast',
+        title: 'toast-title',
+        timerProgressBar: 'timer-progress'
+      },
+      background: '#1e293b',
+      color: '#e2e8f0'
+    });
+  }
+}
   </script>
 
   <style>
