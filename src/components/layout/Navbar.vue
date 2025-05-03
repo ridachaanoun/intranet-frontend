@@ -2,14 +2,34 @@
 import { ref } from 'vue'
 import { useAppStore } from '../../stores/app'
 import { useUserStore } from '@/stores/userStore'
+import api from '@/axios';
+import { useRouter } from 'vue-router';
+import LoadingOverlay from '@/components/common/LoadingOverlay.vue';
 
 const appStore = useAppStore()
 const notificationOpen = ref(false)
 const profileOpen = ref(false)
 const userStore = useUserStore();
-console.log(userStore.user);
+const isLoggingOut = ref(false);
 
 import logo from '@/assets/img/level/logo-white.png';
+
+const router = useRouter();
+
+async function handleLogout() {
+  try {
+    isLoggingOut.value = true;
+    
+    await api.post('/logout');
+    
+      document.cookie = 'token=; expires=Thu, 01 Jan 2024 00:00:00 UTC; path=/;';
+      router.push('/login');
+    
+  } catch (error) {
+    console.error('Logout failed:', error);
+    isLoggingOut.value = false;
+  }
+}
 </script>
 
 <template>
@@ -107,7 +127,7 @@ import logo from '@/assets/img/level/logo-white.png';
               <i class="fas fa-question-circle mr-2 text-primary-400"></i> Help Center
             </a>
             <div class="border-t border-background-light"></div>
-            <a href="#" class="block px-4 py-2 text-sm text-text-primary hover:bg-surface-hover">
+            <a @click="handleLogout" href="#" class="block px-4 py-2 text-sm text-text-primary hover:bg-surface-hover">
               <i class="fas fa-sign-out-alt mr-2 text-secondary-400"></i> Sign out
             </a>
           </div>
@@ -115,4 +135,7 @@ import logo from '@/assets/img/level/logo-white.png';
       </div>
     </div>
   </nav>
+
+  <!-- Loading Overlay during logout -->
+  <LoadingOverlay :show="isLoggingOut" />
 </template>

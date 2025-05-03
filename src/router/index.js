@@ -72,6 +72,17 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
 
+  const token = document.cookie.split('; ').find(row => row.startsWith('token='));
+  if (!token) {
+
+    if (to.name !== 'login') {
+      next({ name: 'login' });
+    } else {
+      next();
+    }
+    return;
+  }
+
   // Allow access to the login page without authentication
   if (to.name === 'login') {
     next();
