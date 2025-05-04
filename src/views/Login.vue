@@ -128,6 +128,8 @@ const handleLogin = async () => {
   } catch (error) {
     // Show error above inputs
     errorMessage.value = 'Invalid credentials or an error occurred.';
+  }finally{
+    isLoading.value = false;
   }
 };
 </script>
