@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useAppStore } from '../../stores/app'
 import { useUserStore } from '@/stores/userStore'
 import api from '@/axios';
@@ -11,6 +11,9 @@ const notificationOpen = ref(false)
 const profileOpen = ref(false)
 const userStore = useUserStore();
 const isLoggingOut = ref(false);
+const notifications = ref([]);
+const unreadNotificationCount = ref(0);
+const isLoadingNotifications = ref(false);
 
 import logo from '@/assets/img/level/logo-white.png';
 
@@ -30,6 +33,37 @@ async function handleLogout() {
     isLoggingOut.value = false;
   }
 }
+
+async function fetchNotifications() {
+  if (userStore.user?.role !== 'admin') return;
+  
+  try {
+    isLoadingNotifications.value = true;
+    const response = await api.get('/admin/purchase-notifications');
+    notifications.value = response.data.notifications || [];
+    unreadNotificationCount.value = notifications.value.length;
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    notifications.value = [];
+  } finally {
+    isLoadingNotifications.value = false;
+  }
+}
+
+function handleNotificationClick() {
+  notificationOpen.value = !notificationOpen.value;
+  if (notificationOpen.value) {
+    // Mark notifications as read when opening the dropdown
+    unreadNotificationCount.value = 0;
+  }
+}
+
+// Fetch notifications on component mount
+onMounted(() => {
+  if (userStore.user?.role === 'admin') {
+    fetchNotifications();
+  }
+});
 </script>
 
 <template>
@@ -68,32 +102,64 @@ async function handleLogout() {
       </div>
 
       <!-- Notifications -->
-      <div class="relative">
+      <div v-if="userStore.user?.role === 'admin'" class="relative">
         <button 
-          @click="notificationOpen = !notificationOpen"
-          @blur="() => setTimeout(() => notificationOpen = false, 200)"
+          @click="handleNotificationClick"
           class="relative text-text-primary hover:text-primary-400 transition-colors p-2"
           aria-label="Notifications"
         >
           <i class="fas fa-bell text-lg"></i>
-          <span class="absolute -top-1 -right-1 bg-secondary-500 text-text-primary text-xs rounded-full w-5 h-5 flex items-center justify-center">
-            0
+          <span v-if="unreadNotificationCount > 0" class="absolute -top-1 -right-1 bg-secondary-500 text-white text-xs rounded-full min-w-5 h-5 flex items-center justify-center px-1">
+            {{ unreadNotificationCount > 99 ? '99+' : unreadNotificationCount }}
           </span>
         </button>
         
         <div v-if="notificationOpen" class="absolute right-0 mt-2 w-80 bg-surface rounded-lg shadow-card overflow-hidden z-50 glass-effect">
-          <div class="px-4 py-3 border-b border-background-light bg-surface-muted">
-            <h3 class="text-sm font-medium text-text-primary">Notifications</h3>
+          <div class="px-4 py-3 border-b border-background-light bg-surface-muted flex justify-between items-center">
+            <h3 class="text-sm font-medium text-text-primary">Purchase Notifications</h3>
+            <button 
+              @click="fetchNotifications" 
+              class="text-primary-400 hover:text-primary-500 transition-colors"
+              title="Refresh notifications"
+            >
+              <i class="fas fa-sync-alt" :class="{ 'animate-spin': isLoadingNotifications }"></i>
+            </button>
           </div>
-          <div class="max-h-96 overflow-y-auto">
-            <div class="flex items-center justify-center h-32 text-text-muted text-sm">
+          
+          <div v-if="isLoadingNotifications" class="flex justify-center items-center h-32">
+            <svg class="animate-spin h-6 w-6 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+          </div>
+          
+          <div v-else class="max-h-96 overflow-y-auto divide-y divide-background-light">
+            <div v-if="notifications.length === 0" class="flex items-center justify-center h-32 text-text-muted text-sm">
               No notifications yet
             </div>
+            
+            <div 
+              v-for="(notification, index) in notifications" 
+              :key="index" 
+              class="p-4 hover:bg-surface-hover transition-colors"
+            >
+              <div class="flex items-start">
+                <div class="flex-shrink-0 mr-3">
+                  <div class="h-8 w-8 rounded-full bg-accent-500/20 flex items-center justify-center">
+                    <i class="fas fa-shopping-cart text-accent-500"></i>
+                  </div>
+                </div>
+                <div>
+                  <p class="text-sm text-text-primary">{{ notification.message }}</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="px-4 py-2 border-t border-background-light bg-surface-muted text-center">
-            <a href="#" class="text-sm text-primary-400 hover:text-primary-300 font-medium">
-              View all notifications
-            </a>
+          
+          <div v-if="notifications.length > 0" class="px-4 py-2 border-t border-background-light bg-surface-muted text-center">
+            <button class="text-sm text-primary-400 hover:text-primary-300 font-medium">
+              Mark all as read
+            </button>
           </div>
         </div>
       </div>
@@ -139,3 +205,9 @@ async function handleLogout() {
   <!-- Loading Overlay during logout -->
   <LoadingOverlay :show="isLoggingOut" />
 </template>
+
+<style scoped>
+.min-w-5 {
+  min-width: 1.25rem;
+}
+</style>
